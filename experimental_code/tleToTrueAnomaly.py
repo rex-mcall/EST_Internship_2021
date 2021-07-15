@@ -34,9 +34,9 @@ E     = 0 # eccentric anomaly
 # Parse TLE
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 tle_string = """
-ISS (ZARYA)
-1 25544U 98067A   21195.53225064  .00001295  00000-0  31859-4 0  9992
-2 25544  51.6422 207.5031 0001965 161.3238 336.1898 15.48797358292834
+STARLINK-1746           
+1 46588U 20070BJ  21196.31535083 -.00001415  00000-0 -76197-4 0  9994
+2 46588  53.0525 220.9238 0000369  98.5550 261.5481 15.06391428 43811
 """
 
 tle_lines = tle_string.strip().splitlines()
@@ -67,17 +67,20 @@ def calc_sma (tle) :
     global n
     global T
     n = float(tle.n) * ( (1.0/86400.0) * (2.0 * pi) )
-    sma = (gravParam ** (1.0/3.0)) / ((2 * tle.n * pi) ** (2.0/3.0))
+    sma = (gravParam / (n ** 2)) ** (1.0/3.0)
 
 def calc_truea (tle) :
     global M
     global truea
     global E
+
     M = tle.M * toRad
+
+    # M + (n * deltaT) to calculate for points forward in time (90 min for iss)
 
     nextE = M
 
-    while ( abs((nextE - E) / nextE) > 0.01) :
+    while ( abs((nextE - E) / nextE) > 0.00001) :
         E = nextE
         nextE = M + (ecc * math.sin(E))
     
@@ -93,9 +96,10 @@ def tle_to_kepler () :
 
 tle_to_kepler()
 
-print("Longitude of Ascending Node: ", lan)
-print("Argument of Perigee: ", argp)
-print("Inclination: ", inc)
-print("Eccentricity: ", ecc)
-print("Semimajor Axis", sma)
-print("True Anomaly", truea)
+print("Longitude of Ascending Node (rad):     ", lan)
+print("Argument of Perigee         (rad):     ", argp)
+print("Inclination                 (rad):     ", inc)
+print("Eccentricity:                          ", ecc)
+print("Semimajor Axis              (meters):  ", sma)
+print("Semimajor Axis              (km):      ", sma / 1000)
+print("True Anomaly                (rad):     ", truea)
