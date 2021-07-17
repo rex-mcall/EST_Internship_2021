@@ -6,6 +6,8 @@ orbitalPositionsX = []
 orbitalPositionsY = []
 orbitalVelocityVectors = []
 
+#uses TLE to return the current distance to the focus
+# NOT CORRECT, needs to be rewritten to accept the current eccentric anomaly instead of the intitial TLE eccA
 def distanceToCentralBody (tle) :
     keplerianElements = ttte.get_tle_to_kepler(tle)
     sma = keplerianElements["sMajorAxis"]
@@ -13,6 +15,7 @@ def distanceToCentralBody (tle) :
     eccA = keplerianElements["eccentricAnomaly"]
     r = sma * ( 1 - ecc * cos(eccA))
     return r
+
 
 def getOrbitalCartesianCoords (tle, curr_trueA) :
     keplerianElements = ttte.get_tle_to_kepler(tle)
@@ -38,11 +41,14 @@ def plotCartesianCoords (orbitalPositionsTuple1, orbitalPositionsTuple2) :
     orbitalPositionsX1, orbitalPositionsY1 = orbitalPositionsTuple1
     orbitalPositionsX2, orbitalPositionsY2 = orbitalPositionsTuple2
 
+    axisRange = 5e7
     fig, (ax1, ax2) = plt.subplots(1, 2)
     fig.set_figheight(5)
-    fig.set_figwidth(5)
-    plt.xlim(-10e6, 10e6)
-    plt.ylim(-10e6, 10e6)
+    fig.set_figwidth(11)
+    ax1.set_xlim(-axisRange, axisRange)
+    ax1.set_ylim(-axisRange, axisRange)
+    ax2.set_xlim(-axisRange, axisRange)
+    ax2.set_ylim(-axisRange, axisRange)
     ax1.title.set_text(ttte.tle1.name)
     ax1.scatter(orbitalPositionsX1, orbitalPositionsY1)
     ax2.title.set_text(ttte.tle2.name)
