@@ -6,6 +6,7 @@ from tletools import TLE
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from math import *
 import sys
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -21,106 +22,93 @@ toDec = 180 / pi
 # Variables
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Kepler Vars
-ecc   = 0 # eccentricity
-sma   = 0 # semimajor axis rad
-inc   = 0 # inclination rad
-lan   = 0 # longitude of ascending node rad
-argp  = 0 # argument of periapsis rad
-truea = 0 # true anomaly rad
 
-n     = 0 # mean motion rad/sec
-M     = 0 # mean anomaly rad
-E     = 0 # eccentric anomaly
 
-#true anomaly plot
-epochX = [] #time
-trueaY = [] #true anomaly
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Parse TLE
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-tle_string = """
-ANIK F3                 
-1 31102U 07009A   21196.24136359  .00000003  00000-0  00000-0 0  9998
-2 31102   0.0282 284.2796 0001947 194.6993 142.5050  1.00274779 28533
+tle_string1 = """
+GPS BIIF-2              
+1 37753U 11036A   21195.46496666 -.00000053  00000-0  00000-0 0  9990
+2 37753  56.4320  41.8904 0108669  49.1116 311.7121  2.00563384 73192
 """
 
 tle_string2 = """    
-THEMIS D                
-1 30797U 07004D   21196.24406038 -.00000504  00000-0  00000-0 0  9993
-2 30797  13.3878   1.4559 8372317 117.8341 295.0692  0.87839905 25265
+TDO-4                   
+1 48620U 21042C   21196.05607278  .00195249 -15658-5  58694-3 0  9999
+2 48620  26.1589 138.3041 2377990 101.4959 285.9800 10.88066450  6184
 """
 
-tle_lines = tle_string.strip().splitlines()
+tle_lines1 = tle_string1.strip().splitlines()
+tle1 = TLE.from_lines(*tle_lines1)
 
-tle = TLE.from_lines(*tle_lines)
+tle_lines2 = tle_string2.strip().splitlines()
+tle2 = TLE.from_lines(*tle_lines2)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # TLE to Keplerian Elements
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def calc_lan (tle) :
-    global lan 
     lan = (tle.raan * toRad)
     return lan
 
 def calc_argp (tle) :
-    global argp
     argp = (tle.argp * toRad)
-
     return argp
 
 def calc_inc (tle) :
-    global inc
     inc = (tle.inc * toRad)
-
     return inc
 
 def calc_eccentricity (tle) :
-    global ecc
     ecc = (tle.ecc)
-
     return ecc
 
 def calc_n (tle) :
-    global n
     n = float(tle.n) * ( (1.0/86400.0) * (2.0 * pi) )
-
     return n
 
 def calc_sma (tle) :
-    global sma
+    n = calc_n(tle)
     sma = (gravParam / (n ** 2)) ** (1.0/3.0)
-
     return sma
 
 def calc_M (tle) :
-    global M
     M = tle.M * toRad
     return M
 
-def calc_truea (tle) :
-    global M
-    global truea
-    global E
+def calc_E (tle) :
+    M = calc_M(tle)
+    nextE = M
+    E = nextE
+    while ( abs((nextE - E) / nextE) > 0.00001) :
+        E = nextE
+        nextE = (( (M) - (ecc * (E * math.cos(E) - math.sin(E))) ) / (1 - ecc * math.cos(E)))
+    return E
 
-    # M + (n * deltaT) to calculate for points forward in time (90 min for iss)
+def calc_truea (tle) :
+    M = calc_M(tle)
+    E = calc_E(tle)
+    ecc = calc_eccentricity(tle)
+
+    # M + (n * deltaT)
 
     nextE = M
 
     while ( abs((nextE - E) / nextE) > 0.00001) :
         E = nextE
-        nextE = M + (ecc * math.sin(E))
+        nextE = (( (M) - (ecc * (E * math.cos(E) - math.sin(E))) ) / (1 - ecc * math.cos(E)))
     
-    truea = math.acos( (math.cos(E) - ecc) / (1.0 - ecc * math.cos(E)) )
+    truea = 2 * atan2(sqrt(1 + ecc) * sin(E / 2), sqrt(1 - ecc) * cos(E / 2))
 
     return truea
 
 def calc_truea_time(tle, increment, numSeconds) :
-    global epochX
-    global trueaY
-    global E
-    global M
+    E = calc_E(tle)
+    M = calc_M(tle)
+    ecc = calc_eccentricity(tle)
+    n = calc_n(tle)
     epochX = []
     trueaY = []
     def my_range(start, end, step):
@@ -132,36 +120,35 @@ def calc_truea_time(tle, increment, numSeconds) :
 
         while ( abs((nextE - E) / nextE) > 0.00001) :
             E = nextE
-            nextE = (M + (n * i)) + (ecc * math.sin(E))
+            #nextE = (M + (n * i)) + (ecc * math.sin(E))
+            nextE = (( (M+(n*i)) - (ecc * (E * math.cos(E) - math.sin(E))) ) / (1 - ecc * math.cos(E)))
+
         
         epochX.append(i / 60.0)
-        trueaY.append( 2 * (math.atan2( (((1+ecc)**(1/2)) * math.sin(E/2)), (((1-ecc)**(1/2)) * math.cos(E/2) )) ) )
 
+        # trueaY.append(2 * math.atan( (((1.0+ecc) / (1.0-ecc))**(1.0/2.0)) * math.tan(E/2.0)))
 
-def tle_to_kepler () :
-    calc_lan(tle)
-    calc_argp(tle)
-    calc_inc(tle)
-    calc_eccentricity(tle)
-    calc_n(tle)
-    calc_M(tle)
-    calc_sma(tle)
-    #calc_truea(tle)
+        trueaY.append(2 * atan2(sqrt(1 + ecc) * sin(E / 2), sqrt(1 - ecc) * cos(E / 2)))
+    return epochX, trueaY
 
-def main() :
+def get_tle_to_kepler (tle) :
+    keplerianElements = {
+        "longAscNode"      : calc_lan(tle)          ,
+        "argPerigee"       : calc_argp(tle)         ,
+        "inclination"      : calc_inc(tle)          ,
+        "eccentricity"     : calc_eccentricity(tle) ,
+        "meanMotionN"      : calc_n(tle)            ,
+        "meanAnomaly"      : calc_M(tle)            ,
+        "sMajorAxis"       : calc_sma(tle)          ,
+        "eccentricAnomaly" : calc_E(tle)            ,
+        "trueAnomaly"      : calc_truea(tle)
+    }
+    return keplerianElements
+
+def plot_tle_over_time() :
     tle_to_kepler()
 
-    # print("Longitude of Ascending Node (rad):     ", lan)
-    # print("Argument of Perigee         (rad):     ", argp)
-    # print("Inclination                 (rad):     ", inc)
-    print("Eccentricity:                          ", ecc)
-    # print("Semimajor Axis              (meters):  ", sma)
-    # print("Semimajor Axis              (km):      ", sma / 1000)
-    # print("True Anomaly                (rad):     ", truea)
-
-    calc_truea_time(tle, 60, 57600 * 3)
+    calc_truea_time(tle1, 120, 5760 * 6)
     plt.plot(epochX, trueaY, label = "true anomaly")
     plt.legend()
     plt.show()
-
-main()
