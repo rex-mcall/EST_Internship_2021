@@ -162,10 +162,9 @@ def get_tle_to_kepler (tle) :
     }
     return keplerianElements
 
+#Test code to plot points over time to make sure the functions work correctly
 def plot_tle_over_time() :
-    tle_to_kepler()
-
-    calc_truea_time(tle1, 120, 5760 * 6)
+    epochX, trueaY = calc_truea_time(tle2, 120, 5760 * 6)
     plt.plot(epochX, trueaY, label = "true anomaly")
     plt.legend()
     plt.show()
