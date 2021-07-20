@@ -58,10 +58,10 @@ def plot_data(dtcb):
 
 
 def main() :
+    # tleToTrueAnomaly
     plot_tle_over_time()
 
-
-
+    # keplerToCartesianOrbital
     truea1 = ttte.calc_truea_time(tled.tle1, 120, 5760 * 6)
     truea2 = ttte.calc_truea_time(tled.tle2, 120, 5760 * 6)
     plotCartesianCoords(tled.tle1, ktco.cartesianCoordsTime(tled.tle1, truea1), tled.tle2, ktco.cartesianCoordsTime(tled.tle2, truea2))

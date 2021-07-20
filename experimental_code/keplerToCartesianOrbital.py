@@ -19,7 +19,8 @@ def getOrbitalCartesianCoords(tle, curr_trueA):
     y = r * sin(curr_trueA)
     return x, y
 
-# takes a tuple of true anomaly and epoch arrays and returns arrays of the calculated Cartesian coordinates over time
+# takes a tuple of true anomaly and epoch arrays and returns arrays of the calculated 
+# orbital frame Cartesian coordinates for each point
 def cartesianCoordsTime(tle, trueAnomalyTuple):
     epoch, trueAnomalyArray = trueAnomalyTuple
     orbitalPositionsX = []
