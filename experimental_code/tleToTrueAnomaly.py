@@ -37,52 +37,45 @@ def calc_lan(tle):
     lan = (tle.raan * toRad)
     return lan
 
+
 # converts the argument of perigee from TLE degrees to radians
-
-
 def calc_argp(tle):
     argp = (tle.argp * toRad)
     return argp
 
+
 # converts the inclination from TLE degrees to radians
-
-
 def calc_inc(tle):
     inc = (tle.inc * toRad)
     return inc
 
+
 # returns the native format of eccentricity from TLE
-
-
 def calc_eccentricity(tle):
     ecc = (tle.ecc)
     return ecc
 
+
 # converts the mean motion from TLE rev/day to rad/s
-
-
 def calc_n(tle):
     n = float(tle.n) * ((1.0/86400.0) * (2.0 * pi))
     return n
 
+
 # calculates the length of the semimajor axis in kilometers
-
-
 def calc_sma(tle):
     n = calc_n(tle)
     sma = (gravParam / (n ** 2)) ** (1.0/3.0)
     return sma
 
+
 # converts the mean anomaly from TLE degrees to radians
-
-
 def calc_M(tle):
     M = tle.M * toRad
     return M
 
+
 # calculates the eccentric anomaly (rad) using a Newton-Rhapson setup
-
-
 def calc_E(tle):
     M = calc_M(tle)
     nextE = M
@@ -93,9 +86,8 @@ def calc_E(tle):
                  (1 - ecc * math.cos(E)))
     return E
 
+
 # calculates the true anomaly (rad)
-
-
 def calc_truea(tle):
     M = calc_M(tle)
     E = calc_E(tle)
@@ -105,9 +97,8 @@ def calc_truea(tle):
 
     return truea
 
+
 # creates an array of the value of true anomaly for a period of time over the orbit
-
-
 def calc_truea_time(tle, increment, numSeconds):
     E = calc_E(tle)
     M = calc_M(tle)
@@ -138,26 +129,18 @@ def calc_truea_time(tle, increment, numSeconds):
                       sqrt(1 - ecc) * cos(E / 2)))
     return epochX, trueaY
 
+
 # returns a dictionary of calculated orbital elements for a TLE
-
-
 def tleToKepler(tle):
 
-    lan = calc_lan(tle)           #
-    argp = calc_argp(tle)          #
-    inc = calc_inc(tle)           #
-    ecc = calc_eccentricity(tle)  #
-    n = calc_n(tle)             #
-    M = calc_M(tle)             #
-    a = calc_sma(tle)           #
-    E = calc_E(tle)             #
-    v = calc_truea(tle)         #
+    lan = calc_lan(tle)           # longitude ascending node
+    argp = calc_argp(tle)         # argument periapsis
+    inc = calc_inc(tle)           # inclination
+    ecc = calc_eccentricity(tle)  # eccentricity
+    n = calc_n(tle)               # mean motion
+    M = calc_M(tle)               # mean anomaly
+    a = calc_sma(tle)             # semimajor axis
+    E = calc_E(tle)               # eccentric anomaly
+    v = calc_truea(tle)           # true anomaly
 
     return lan, argp, inc, ecc, n, M, a, E, v
-
-# Test code to plot points over time to make sure the functions work correctly
-def plot_tle_over_time():
-    epochX, trueaY = calc_truea_time(tle2, 120, 5760 * 6)
-    plt.plot(epochX, trueaY, label="true anomaly")
-    plt.legend()
-    plt.show()
