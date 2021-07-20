@@ -7,6 +7,7 @@ import tleData                   as tled
 
 from math import *
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -59,15 +60,33 @@ def plot_data(dtcb):
 # cartOrbitalToInertial
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def plotOrbitalToInertial(tle) :
-    epoch_tAnomArray = ttte.calc_truea_time(tle, 120, 5760 * 6)
+    epoch_tAnomArray = ttte.calc_truea_time(tle, 120, 5760 * 3)
     orbX, orbY = ktco.cartesianCoordsTime(tle, epoch_tAnomArray)
 
     inertX, inertY, inertZ = coti.inertialFramePointsTime(tle, (orbX, orbY))
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection = "3d")
-
+    ax.set_box_aspect((np.ptp(inertX), np.ptp(inertX), np.ptp(inertX)))  # aspect ratio is 1:1:1 in data space
     ax.scatter(inertX, inertY, inertZ, marker='o')
+
+    plt.show()
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# inertialToRotationalFrame
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+def plotInertToRotation(tle) :
+    epoch_tAnomArray = ttte.calc_truea_time(tle, 480, 5760 * 3)
+    orbX, orbY = ktco.cartesianCoordsTime(tle, epoch_tAnomArray)
+
+    inertX, inertY, inertZ = coti.inertialFramePointsTime(tle, (orbX, orbY))
+    rotX, rotY, rotZ = itrf.matrixRotationTime(tle, (inertX, inertY, inertZ))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection = "3d")
+    
+    ax.scatter(inertX, inertY, inertZ, c='b', marker='o')
+    ax.scatter(rotX, rotY, rotZ, c = 'r',marker='o')
 
     plt.show()
 
@@ -81,10 +100,10 @@ def main() :
     # truea2 = ttte.calc_truea_time(tled.tle2, 120, 5760 * 6)
     # plotCartesianCoords(tled.tle1, ktco.cartesianCoordsTime(tled.tle1, truea1), tled.tle2, ktco.cartesianCoordsTime(tled.tle2, truea2))
 
-    # cartOrbitalToInertial
-    plotOrbitalToInertial(tled.tle1)
+    # # # cartOrbitalToInertial
+    # plotOrbitalToInertial(tled.tle2)
 
-
-
+    # inertialToRotationalFrame
+    plotInertToRotation(tled.tle2)
 
 main()

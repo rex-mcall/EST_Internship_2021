@@ -1,8 +1,6 @@
 import keplerToCartesianOrbital as ktco
 import tleToTrueAnomaly as ttte
-import tleData
 from math import *
-import matplotlib.pyplot as plt
 
 # takes a set of points in the orbital frame and converts them to a 
 # 3d vector in the inertial frame oriented with Aries and equatorial plane
