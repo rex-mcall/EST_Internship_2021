@@ -2,6 +2,7 @@ import tleToTrueAnomaly          as ttte
 import keplerToCartesianOrbital  as ktco
 import cartOrbitalToInertial     as coti
 import inertialToRotationalFrame as itrf
+
 import tleData                   as tled
 
 from math import *
@@ -12,8 +13,8 @@ import matplotlib.pyplot as plt
 # tleToTrueAnomaly
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Test code to plot points over time to make sure the functions work correctly
-def plot_tle_over_time():
-    epochX, trueaY = ttte.calc_truea_time(tled.tle2, 120, 5760 * 6)
+def plot_tle_over_time(tle):
+    epochX, trueaY = ttte.calc_truea_time(tle, 120, 5760 * 6)
     plt.plot(epochX, trueaY, label="true anomaly")
     plt.legend()
     plt.show()
@@ -54,17 +55,35 @@ def plot_data(dtcb):
     ax.scatter(range(0, dtcb.__len__()), dtcb)
     plt.show()
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# cartOrbitalToInertial
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+def plotOrbitalToInertial(tle) :
+    epoch_tAnomArray = ttte.calc_truea_time(tle, 120, 5760 * 6)
+    orbX, orbY = ktco.cartesianCoordsTime(tle, epoch_tAnomArray)
 
+    inertX, inertY, inertZ = coti.inertialFramePointsTime(tle, (orbX, orbY))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection = "3d")
+
+    ax.scatter(inertX, inertY, inertZ, marker='o')
+
+    plt.show()
 
 
 def main() :
-    # tleToTrueAnomaly
-    plot_tle_over_time()
+    # # tleToTrueAnomaly
+    # plot_tle_over_time(tled.tle2)
 
-    # keplerToCartesianOrbital
-    truea1 = ttte.calc_truea_time(tled.tle1, 120, 5760 * 6)
-    truea2 = ttte.calc_truea_time(tled.tle2, 120, 5760 * 6)
-    plotCartesianCoords(tled.tle1, ktco.cartesianCoordsTime(tled.tle1, truea1), tled.tle2, ktco.cartesianCoordsTime(tled.tle2, truea2))
+    # # keplerToCartesianOrbital
+    # truea1 = ttte.calc_truea_time(tled.tle1, 120, 5760 * 6)
+    # truea2 = ttte.calc_truea_time(tled.tle2, 120, 5760 * 6)
+    # plotCartesianCoords(tled.tle1, ktco.cartesianCoordsTime(tled.tle1, truea1), tled.tle2, ktco.cartesianCoordsTime(tled.tle2, truea2))
+
+    # cartOrbitalToInertial
+    plotOrbitalToInertial(tled.tle1)
+
 
 
 

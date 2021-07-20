@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 # takes a set of points in the orbital frame and converts them to a 
 # 3d vector in the inertial frame oriented with Aries and equatorial plane
-def getInterialFramePoints(tle, xy):
-    orbX, orbY = xy  # orbital frame coords
+def getInterialFramePoints(tle, orbXY):
+    orbX, orbY = orbXY  # orbital frame coords
     lan, argp, inc, ecc, n, M, a, E, v = ttte.tleToKepler(tle)
 
     # inertial frame coords
