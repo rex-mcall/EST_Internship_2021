@@ -51,7 +51,7 @@ def matrixRotation (tle, inertXYZ) :
     
     return rotatedCoords[0], rotatedCoords[1], rotatedCoords[2]
 
-#takes a tuple of inertial XYZ arrays and rotates them to the rotational frame
+#takes a tuple of inertial XYZ arrays and moves them to the rotational frame (ECEF coords)
 def matrixRotationTime(tle, inertXYZ) :
     inertX, inertY, inertZ = inertXYZ
 

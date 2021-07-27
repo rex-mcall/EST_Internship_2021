@@ -2,7 +2,9 @@ import tleToTrueAnomaly          as ttte
 import keplerToCartesianOrbital  as ktco
 import cartOrbitalToInertial     as coti
 import inertialToRotationalFrame as itrf
+import altAzFromGPS              as aafg
 
+import gps
 import tleData                   as tled
 
 from math import *
@@ -90,6 +92,19 @@ def plotInertToRotation(tle) :
 
     plt.show()
 
+def testAltAz(tle) :
+    epoch_tAnomArray = ttte.calc_truea_time(tle, 480, 5760 * 3)
+    orbX, orbY = ktco.cartesianCoordsTime(tle, epoch_tAnomArray)
+
+    inertX, inertY, inertZ = coti.inertialFramePointsTime(tle, (orbX, orbY))
+    rotX, rotY, rotZ = itrf.matrixRotationTime(tle, (inertX, inertY, inertZ))
+
+    recPosTuple = aafg.calcECEF(gps.latitude, gps.longitude, gps.height)
+
+    altAz = aafg.calcAltAz((rotX, rotY, rotZ), recPosTuple, gps.latitude, gps.longitude, gps.height)
+
+    print("Altitude  : ", altAz[0])
+    print("Azimuth   : ", altAz[1])
 
 def main() :
     # # tleToTrueAnomaly
@@ -104,6 +119,7 @@ def main() :
     # plotOrbitalToInertial(tled.tle2)
 
     # inertialToRotationalFrame
-    plotInertToRotation(tled.tle2)
+    # plotInertToRotation(tled.tle2)
 
+    testAltAz(tled.tle2)
 main()
