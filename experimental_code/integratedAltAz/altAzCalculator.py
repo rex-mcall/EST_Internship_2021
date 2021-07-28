@@ -84,6 +84,19 @@ def calcAltAz(satXYZ, recXYZ, lat, lon, h):
 
     return altitude, azimuth
 
+def calcAltAz2 (satXYZ, recXYZ, lat, lon, h) :
+    losX, losY, losZ = computeLineOfSightVector(satXYZ, recXYZ)
+
+    losMatrix = [
+        losX,
+        losY,
+        losZ
+    ]
+
+    sezRotationMatrix = np.array([
+        
+    ])
+
 # calculates the altitude and azimuth given a TLE
 # object, reveiver location in decimal coords, and
 # a datetime object of viewing time
@@ -100,13 +113,13 @@ def main(tle, recLat, recLon, recH, currTime):
     julianTime = itrf.datetimeToJulianTime(currTime)
     rotX, rotY, rotZ = itrf.matrixRotation(tle, (inertX, inertY, inertZ), julianTime)
 
-    recPosTuple = calcECEF(gps.latitude, gps.longitude, gps.height)
+    recPosTuple = calcECEF(recLat, recLon, recH)
 
-    altAz = calcAltAz((rotX, rotY, rotZ), recPosTuple, gps.latitude, gps.longitude, gps.height)
+    altAz = calcAltAz((rotX, rotY, rotZ), recPosTuple, recLat, recLon, recH)
 
-    print("Altitude  : ", altAz[0])
-    print("Azimuth   : ", altAz[1])
+    print("Altitude  : ", altAz[0] * toDec)
+    print("Azimuth   : ", altAz[1] * toDec)
 
-x = dt.datetime(2021, 7, 28, 3, 4, 19)
+x = dt.datetime(2021, 7, 28, 12, 47, 33)
 
 main(tled.tle3, gps.latitude, gps.longitude, gps.height, x)
