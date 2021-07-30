@@ -6,6 +6,11 @@ from math import *
 import sys
 import datetime as dt
 
+gravParam = 3.986004418 * (10 ** 14)
+pi = math.pi
+toRad = pi / 180
+toDec = 180 / pi
+
 # helper function to grab the julian date from the TLE
 def epochToJulianTime(tle):
     return tle.epoch.jd
@@ -34,7 +39,7 @@ def julianToGMST(julDate):
 
     angleSecToTimeSec = 360 - ((thetaGMST % 86400) / 240)
 
-    return angleSecToTimeSec
+    return angleSecToTimeSec * toRad
 
 # uses the CCW Z-axis rotation matrix to rotate to the new GMST angle
 # moves from inertial frame to rotational frame (ECEF coords)
@@ -50,6 +55,7 @@ def matrixRotation (tle, inertXYZ, julianDate) :
     ])
 
     rotationAngle = julianToGMST(julianDate)
+    # rotationAngle = 237.77 * toRad
 
     rotationMatrix = np.array([
         [cos(rotationAngle), -sin(rotationAngle), 0],

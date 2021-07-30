@@ -18,21 +18,19 @@ pi = math.pi
 toRad = pi / 180
 toDec = 180 / pi
 
-eqRadius = 6378 #a, radius of earth at equator
-polarRadius = 6356 #b, radius of earth at poles
+eqRadius = 6378 * 1000 #a, radius of earth at equator
+polarRadius = 6356 * 1000 #b, radius of earth at poles
 
 # calculates the Earth Centered, Earth Fixed [ECEF] vector for a ground station latitude, longitude, and height
 # latitude & longitude in decimal, height in GPS height above mean sea level in meters
 # https://en.wikipedia.org/wiki/Geographic_coordinate_conversion#From_geodetic_to_ECEF_coordinates
 def calcECEF(lat, lon, h):
-
     e2 = 1 - ( (polarRadius ** 2) / (eqRadius ** 2) )
     N = eqRadius / ((1 - e2 * sin(lat)) ** (1/2))
-    magnitude = eqRadius + h
 
-    ECEF_X = (N + magnitude) * cos(lat) * cos(lon)
-    ECEF_Y = (N + magnitude) * cos(lat) * sin(lon)
-    ECEF_Z = ((((polarRadius ** 2) / (eqRadius ** 2)) * N) + magnitude) * sin(lat)
+    ECEF_X = (N + h) * cos(lat) * cos(lon)
+    ECEF_Y = (N + h) * cos(lat) * sin(lon)
+    ECEF_Z = ((((polarRadius ** 2) / (eqRadius ** 2)) * N) + h) * sin(lat)
 
     return ECEF_X, ECEF_Y, ECEF_Z
 
@@ -63,12 +61,6 @@ def calcAltAz(satXYZ, recXYZ, lat, lon, h):
         [cos(lat)*cos(lon),   cos(lat)*sin(lon),   sin(lat)   ]
     ])
 
-    # sezRotationMatrix = np.array([
-    #     [-sin(lat)        ,    cos(lat)        ,   0          ],
-    #     [sin(lon)*cos(lat),   sin(lon)*sin(lat),   -cos(lon)  ],
-    #     [cos(lon)*cos(lat),   cos(lon)*sin(lat),   sin(lon)   ]
-    # ])
-
     numpySEZ = np.dot(sezRotationMatrix, losMatrix)
     sezArray = numpySEZ.tolist()
 
@@ -94,7 +86,7 @@ def calcAltAz2 (satXYZ, recXYZ, lat, lon, h) :
     ]
 
     sezRotationMatrix = np.array([
-        
+
     ])
 
 # calculates the altitude and azimuth given a TLE
@@ -103,7 +95,8 @@ def calcAltAz2 (satXYZ, recXYZ, lat, lon, h) :
 def main(tle, recLat, recLon, recH, currTime):
 
     timeDifference = currTime - tle.epoch.datetime
-    elapsedSeconds = timeDifference.total_seconds()
+    # elapsedSeconds = timeDifference.total_seconds()
+    elapsedSeconds = 0
 
     currTrueAnom = ttke.calc_truea_deltaT(tle, elapsedSeconds)
     orbX, orbY = ktco.getOrbitalCartesianCoords(tle, currTrueAnom)
@@ -120,6 +113,6 @@ def main(tle, recLat, recLon, recH, currTime):
     print("Altitude  : ", altAz[0] * toDec)
     print("Azimuth   : ", altAz[1] * toDec)
 
-x = dt.datetime(2021, 7, 28, 12, 47, 33)
+x = dt.datetime(2021, 7, 28, 19, 24, 24)
 
-main(tled.tle3, gps.latitude, gps.longitude, gps.height, x)
+main(tled.tle3, gps.latitude * toRad, gps.longitude * toRad, gps.height, tled.tle3.epoch.datetime)
