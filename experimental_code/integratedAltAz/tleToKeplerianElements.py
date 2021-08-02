@@ -63,16 +63,19 @@ def calc_truea(tle):
 
 #calculates the true anomaly for a given delta in seconds after the TLE epoch time
 def calc_truea_deltaT(tle, deltaTSeconds) :
-    E = calc_E(tle)
     M = calc_M(tle)
+    # M = 4.10850505918
     ecc = calc_eccentricity(tle)
+    # ecc = 0.4
     n = calc_n(tle)
-    i = deltaTSeconds
+    M = M + (n * deltaTSeconds)
     # same as calc_E except is propogates the mean anomaly forward in time
-    nextE = M + (n * i)
+    E = M
+    nextE = E - ((E - (ecc * sin(E - M))) / (1 - ecc * cos(E)))
     while (abs((nextE - E) / nextE) > 0.00001):
         E = nextE
-        nextE = (((M+(n*i)) - (ecc * (E * math.cos(E) - math.sin(E)))) / (1 - ecc * math.cos(E)))
+        # nextE = (((M) - (ecc * (E * math.cos(E) - math.sin(E)))) / (1 - ecc * math.cos(E)))
+        nextE = E - ((E - (ecc * sin(E)) - M) / (1 - (ecc * cos(E))))
     return 2 * atan2(sqrt(1 + ecc) * sin(E / 2), sqrt(1 - ecc) * cos(E / 2))
 
 # returns the calculated orbital elements from a TLE set
