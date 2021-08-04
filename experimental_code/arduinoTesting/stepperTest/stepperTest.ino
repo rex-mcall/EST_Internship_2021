@@ -1,7 +1,9 @@
-// Define pin connections & motor's steps per revolution
 const int dirPin = 10;
 const int stepPin = 9;
 const int stepsPerRevolution = 200;
+
+const int potX = 7;
+const int potY = 8;
 
 void setup()
 {
