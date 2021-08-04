@@ -103,7 +103,9 @@ def main(tle, recLat, recLon, recH, currTime):
 
     inertX, inertY, inertZ = coti.getInterialFramePoints(tle, (orbX, orbY))
 
-    julianTime = itrf.datetimeToJulianTime(currTime)
+    # julianTime = itrf.datetimeToJulianTime(currTime)
+    julianTime = tle.epoch.jd
+    
     rotX, rotY, rotZ = itrf.matrixRotation(tle, (inertX, inertY, inertZ), julianTime)
 
     recPosTuple = calcECEF(recLat, recLon, recH)
@@ -113,6 +115,6 @@ def main(tle, recLat, recLon, recH, currTime):
     print("Altitude  : ", altAz[0] * toDec)
     print("Azimuth   : ", altAz[1] * toDec)
 
-x = dt.datetime(2021, 7, 28, 19, 24, 24)
+x = dt.datetime(2021, 7, 28, 15, 24, 24)
 
 main(tled.tle3, gps.latitude * toRad, gps.longitude * toRad, gps.height, tled.tle3.epoch.datetime)

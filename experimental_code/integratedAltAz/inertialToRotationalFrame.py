@@ -6,6 +6,8 @@ from math import *
 import sys
 import datetime as dt
 
+import tleData as tled
+
 gravParam = 3.986004418 * (10 ** 14)
 pi = math.pi
 toRad = pi / 180
@@ -28,18 +30,25 @@ def datetimeToJulianTime(x):
     return jd
 # calculates the angle to rotate between GMT and the reference direction towards Aries
 # angle between GMT line and aries heading
+# def julianToGMST(julDate):
+#     tUT1 = (
+#         (julDate - 2451545.0) / 36525
+#     )
+
+#     thetaGMST = (  # Grenwich mean siderial time
+#         67310.54841 + ((876600 + 8640184.812866) * tUT1) + (0.093104 * (tUT1 ** 2)) - (6.2e-6 * (tUT1 ** 3))
+#     )
+
+#     angleSecToTimeSec = 360 - ((thetaGMST % 86400) / 240)
+
+#     return angleSecToTimeSec * toRad
+
 def julianToGMST(julDate):
-    tUT1 = (
-        (julDate - 2451545.0) / 36525
-    )
-
-    thetaGMST = (  # Grenwich mean siderial time
-        67310.54841 + ((876600 + 8640184.812866) * tUT1) + (0.093104 * (tUT1 ** 2)) - (6.2e-6 * (tUT1 ** 3))
-    )
-
-    angleSecToTimeSec = 360 - ((thetaGMST % 86400) / 240)
-
-    return angleSecToTimeSec * toRad
+    D = julDate - 2451545.0
+    GMST =  18.697374558 + (24.06570982441908 * D)
+    hours = GMST % 24
+    Angle = hours * 3600 * (7.2921159e-5)
+    return Angle
 
 # uses the CCW Z-axis rotation matrix to rotate to the new GMST angle
 # moves from inertial frame to rotational frame (ECEF coords)
