@@ -43,12 +43,14 @@ def calc_M(tle):
 # calculates the eccentric anomaly (rad) using a Newton-Rhapson setup
 def calc_E(tle):
     M = calc_M(tle)
-    nextE = M
-    E = nextE
-    while (abs((nextE - E) / nextE) > 0.00001):
+    ecc = calc_eccentricity(tle)
+    E = M
+    nextE = E - ((E - (ecc * sin(E - M))) / (1 - ecc * cos(E)))
+    while (abs((nextE - E) / nextE) > 1e-14):
         E = nextE
-        nextE = (((M) - (ecc * (E * math.cos(E) - math.sin(E)))) /
-                 (1 - ecc * math.cos(E)))
+        # both versions of the equation yield the same answer
+        # nextE = (((M) - (ecc * (E * math.cos(E) - math.sin(E)))) / (1 - ecc * math.cos(E)))
+        nextE = E - ((E - (ecc * sin(E)) - M) / (1 - (ecc * cos(E))))
     return E
 
 
@@ -64,19 +66,19 @@ def calc_truea(tle):
 #calculates the true anomaly for a given delta in seconds after the TLE epoch time
 def calc_truea_deltaT(tle, deltaTSeconds) :
     M = calc_M(tle)
-    # M = 4.10850505918
     ecc = calc_eccentricity(tle)
-    # ecc = 0.4
     n = calc_n(tle)
     M = M + (n * deltaTSeconds)
     # same as calc_E except is propogates the mean anomaly forward in time
     E = M
     nextE = E - ((E - (ecc * sin(E - M))) / (1 - ecc * cos(E)))
-    while (abs((nextE - E) / nextE) > 0.00001):
+    while (abs((nextE - E) / nextE) > 1e-14):
         E = nextE
+        # both versions of the equation yield the same answer
         # nextE = (((M) - (ecc * (E * math.cos(E) - math.sin(E)))) / (1 - ecc * math.cos(E)))
         nextE = E - ((E - (ecc * sin(E)) - M) / (1 - (ecc * cos(E))))
-    return 2 * atan2(sqrt(1 + ecc) * sin(E / 2), sqrt(1 - ecc) * cos(E / 2))
+    v = 2 * atan2(sqrt(1 + ecc) * sin(E / 2), sqrt(1 - ecc) * cos(E / 2))
+    return v
 
 # returns the calculated orbital elements from a TLE set
 def tleToKepler(tle):
