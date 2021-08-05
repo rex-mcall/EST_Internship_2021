@@ -9,7 +9,7 @@ import datetime as dt
 gravParam = 3.986004418 * (10 ** 14)
 pi = math.pi
 toRad = pi / 180
-toDec = 180 / pi
+toDeg = 180 / pi
 
 # converts the longitude of the ascending node from TLE degrees to radians
 def calc_lan(tle):

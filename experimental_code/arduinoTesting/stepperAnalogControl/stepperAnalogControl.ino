@@ -7,6 +7,9 @@ const int ms3  =  4;
 
 const int joyX = A0;
 
+int maxRPM = 45;
+double scaleTerm = ((maxRPM * 200.0) / 512.0)/60.0;
+
 void setup() {
     pinMode(step, OUTPUT);
     pinMode(dir, OUTPUT);
@@ -21,30 +24,32 @@ void setup() {
     digitalWrite(ms1, LOW);
     digitalWrite(ms2, LOW);
     digitalWrite(ms3, LOW);
+    Serial.begin(9600);
 }
 
 void loop() {
     int joyXVal = analogRead(joyX) - 512;
 
-    int xStepPerSec = abs(int((double(joyXVal) * 11.719) / 60.0));
+    double xStepPerSec = abs(joyXVal) * scaleTerm;
 
-    int xStepDelay = int((1.0 / double(xStepPerSec)) / 2.0);
+    long xStepDelayMS = long(((1.0 / xStepPerSec) / 2.0) * 100000);
 
-    if (joyXVal >=  10) {
+
+    if (joyXVal >=  -3) {
         digitalWrite(dir, HIGH);
 
         digitalWrite(step, HIGH);
-        delayMicroseconds(xStepDelay);
+        delayMicroseconds(xStepDelayMS);
         digitalWrite(step, LOW);
-        delayMicroseconds(xStepDelay);
+        delayMicroseconds(xStepDelayMS);
     }
-    else if (joyXVal <= -10) {
+    else if (joyXVal <= -23) {
         digitalWrite(dir, LOW);
 
         digitalWrite(step, HIGH);
-        delayMicroseconds(xStepDelay);
+        delayMicroseconds(xStepDelayMS);
         digitalWrite(step, LOW);
-        delayMicroseconds(xStepDelay);
+        delayMicroseconds(xStepDelayMS);
     }
 
 }

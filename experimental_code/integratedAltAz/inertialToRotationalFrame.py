@@ -11,7 +11,7 @@ import tleData as tled
 gravParam = 3.986004418 * (10 ** 14)
 pi = math.pi
 toRad = pi / 180
-toDec = 180 / pi
+toDeg = 180 / pi
 
 # helper function to grab the julian date from the TLE
 def epochToJulianTime(tle):
@@ -28,20 +28,6 @@ def datetimeToJulianTime(x):
         ((((((x.second + (x.microsecond / 1e6)) / 60) + x.minute) / 60) + x.hour) / 24)
     )
     return jd
-# calculates the angle to rotate between GMT and the reference direction towards Aries
-# angle between GMT line and aries heading
-# def julianToGMST(julDate):
-#     tUT1 = (
-#         (julDate - 2451545.0) / 36525
-#     )
-
-#     thetaGMST = (  # Grenwich mean siderial time
-#         67310.54841 + ((876600 + 8640184.812866) * tUT1) + (0.093104 * (tUT1 ** 2)) - (6.2e-6 * (tUT1 ** 3))
-#     )
-
-#     angleSecToTimeSec = 360 - ((thetaGMST % 86400) / 240)
-
-#     return angleSecToTimeSec * toRad
 
 def julianToGMST(julDate):
     D = julDate - 2451545.0
@@ -67,8 +53,8 @@ def matrixRotation (tle, inertXYZ, julianDate) :
     # rotationAngle = 237.77 * toRad
 
     rotationMatrix = np.array([
-        [cos(rotationAngle), -sin(rotationAngle), 0],
-        [sin(rotationAngle),  cos(rotationAngle), 0],
+        [cos(rotationAngle), sin(rotationAngle), 0],
+        [-sin(rotationAngle),  cos(rotationAngle), 0],
         [0,                   0,                  1]
     ])
 

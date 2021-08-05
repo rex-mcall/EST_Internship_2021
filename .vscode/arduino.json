@@ -1,6 +1,6 @@
 {
     "board": "arduino:avr:uno",
     "port": "COM7",
-    "sketch": "experimental_code\\arduinoTesting\\stepperTest\\stepperTest.ino",
+    "sketch": "experimental_code\\arduinoTesting\\stepperAnalogControl\\stepperAnalogControl.ino",
     "programmer": "arduino:avrisp"
 }
