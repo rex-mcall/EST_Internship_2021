@@ -49,11 +49,11 @@ def computeLineOfSightVector(satXYZ, recXYZ) :
 def calcAltAz(satXYZ, recXYZ, lat, lon, h):
     losX, losY, losZ = computeLineOfSightVector(satXYZ, recXYZ)
 
-    losMatrix = [
+    losMatrix = np.array([
         losX,
         losY,
         losZ
-    ]
+    ])
 
     sezRotationMatrix = np.array([
         [sin(lat)*cos(lon),   sin(lat)*sin(lon),   -cos(lat)  ],
@@ -71,10 +71,33 @@ def calcAltAz(satXYZ, recXYZ, lat, lon, h):
           (sezArray[2] ** 2) ) ** (1/2)
     )
 
+    elevation = asin(sezArray[2] / sezMagnitude)
     azimuth = atan2(sezArray[1], -sezArray[0])
-    altitude = asin(sezArray[2] / sezMagnitude)
 
-    return altitude, azimuth
+    return elevation, azimuth
+
+def calcElevAz(satXYZ, recXYZ, recLat, recLon, recH):
+    losX, losY, losZ = computeLineOfSightVector(satXYZ, recXYZ)
+
+    losMatrix = np.array([
+        losX,
+        losY,
+        losZ
+    ])
+
+    enuConversionMatrix = np.array([
+        [-sin(recLon), -sin(recLat) * cos(recLon), cos(recLat) * cos(recLon)],
+        [ cos(recLon), -sin(recLat) * sin(recLon), cos(recLat) * sin(recLon)],
+        [ 0,            cos(recLat),  sin(recLat)]
+    ])
+
+    numpyENUVector = np.dot(enuConversionMatrix, losMatrix)
+    enuVectorArray = numpyENUVector.tolist()
+
+    az = np.degrees(np.arctan(enuVectorArray[0] / enuVectorArray[1]))
+    elev = np.degrees(np.arctan(enuVectorArray[2] / enuVectorArray[1]))
+
+    return elev, az
 
 # calculates the altitude and azimuth given a TLE
 # object, reveiver location in decimal coords, and
@@ -83,7 +106,6 @@ def main(tle, recLat, recLon, recH, currTime):
 
     timeDifference = currTime - tle.epoch.datetime
     elapsedSeconds = timeDifference.total_seconds()
-    # elapsedSeconds = 0
 
     currTrueAnom = ttke.calc_truea_deltaT(tle, elapsedSeconds)
     orbX, orbY = ktco.getOrbitalCartesianCoords(tle, currTrueAnom)
@@ -91,15 +113,18 @@ def main(tle, recLat, recLon, recH, currTime):
     inertX, inertY, inertZ = coti.getInterialFramePoints(tle, (orbX, orbY))
 
     julianTime = itrf.datetimeToJulianTime(currTime)
-    
     rotX, rotY, rotZ = itrf.matrixRotation(tle, (inertX, inertY, inertZ), julianTime)
 
     recPosTuple = calcECEF(recLat, recLon, recH)
 
-    altAz = calcAltAz((rotX, rotY, rotZ), recPosTuple, recLat, recLon, recH)
+    # altAz = calcAltAz((rotX, rotY, rotZ), recPosTuple, recLat, recLon, recH)
+    elevAz = calcElevAz((rotX, rotY, rotZ), recPosTuple, recLat, recLon, recH)
 
-    print("Altitude  : ", altAz[0] * toDeg)
-    print("Azimuth   : ", altAz[1] * toDeg)
+    # print("Elevation = ", altAz[0] * toDeg)
+    # print("Azimuth = ", altAz[1] * toDeg)
+
+    print("elev = ", elevAz[0])
+    print("az = ", elevAz[1])
 
 x = dt.datetime(2021, 7, 28, 19, 24, 24)
 
