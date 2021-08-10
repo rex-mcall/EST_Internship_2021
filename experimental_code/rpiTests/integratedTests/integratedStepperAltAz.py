@@ -86,20 +86,20 @@ while (satellite.alt * toDeg) >= 0 :
     satellite.compute(observer)
 
 
-    if (currYAngle) - ((elevDegPerStep + 0.1) / 2) < (satellite.alt * toDeg):
+    if (currYAngle) < (satellite.alt * toDeg) + ((elevDegPerStep + 0.1) / 2):
         print("ystep")
         singleStep_Elev(1)
         currYAngle = currYAngle + elevDegPerStep
-    elif (currYAngle) + ((elevDegPerStep + 0.1) / 2) >= (satellite.alt * toDeg):
+    elif (currYAngle) >= (satellite.alt * toDeg) - ((elevDegPerStep + 0.1) / 2):
         print("ystep")
         singleStep_Elev(0)
         currYAngle = currYAngle - elevDegPerStep
 
-    if (currXAngle % 360) - ((azDegPerStep + 0.1) / 2) < (satellite.az * toDeg) :
+    if (currXAngle % 360) < (satellite.az * toDeg) + ((azDegPerStep + 0.1) / 2) :
         singleStep_Az(1)
         currXAngle = currXAngle + azDegPerStep
 
-    elif (currXAngle % 360) + ((azDegPerStep + 0.1) / 2) >= (satellite.az * toDeg) :
+    elif (currXAngle % 360) >= (satellite.az * toDeg) - ((azDegPerStep + 0.1) / 2) :
         singleStep_Az(0)
         currXAngle = currXAngle - azDegPerStep
 GPIO.cleanup()
