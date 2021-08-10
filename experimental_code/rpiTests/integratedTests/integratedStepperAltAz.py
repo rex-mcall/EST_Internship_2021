@@ -88,7 +88,7 @@ while (satellite.alt * toDeg) >= 0 :
     observer.date = datetime.now(timezone.utc)
     satellite.compute(observer)
 
-    if dt.now < maxAltTime :
+    if datetime.utcnow() < maxAltTime :
         if (currXAngle) < (satellite.alt * toDeg):
             singleStep_Elev(1)
             currYAngle = currYAngle + 0.9
