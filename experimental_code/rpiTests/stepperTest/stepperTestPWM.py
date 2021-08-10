@@ -22,17 +22,10 @@ RESOLUTION = {'Full': (0, 0, 0),
 for i in range(3):
     pi.write(MODE[i], RESOLUTION['Full'][i])
 
+pi.write(DIR, 1)  # Set direction
 # Set duty cycle and frequency
 pi.set_PWM_dutycycle(STEP, 128)  # PWM 1/2 On 1/2 Off
 pi.set_PWM_frequency(STEP, 400)  # Pulses per second
 
-try:
-    while True:
-        pi.write(DIR, pi.read(SWITCH))  # Set direction
-        sleep(.1)
-
-except KeyboardInterrupt:
-    print ("\nCtrl-C pressed.  Stopping PIGPIO and exiting...")
-finally:
-    pi.set_PWM_dutycycle(STEP, 0)  # PWM off
-    pi.stop()
+pi.set_PWM_dutycycle(STEP, 0)
+pi.stop()
