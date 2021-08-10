@@ -10,8 +10,8 @@ toRad = pi / 180
 
 tle_string = """
 ONEWEB-0039             
-1 27432U 02024C   21222.51420694 -.00000029  00000-0  89178-5 0  9996
-2 27432  99.0844 237.8183 0051439  74.6266  92.3084 14.14112356992878
+1 42962U 17061H   21222.48200087  .00000003  00000-0 -59361-5 0  9999
+2 42962  86.3946  45.6223 0002368  93.2330 266.9136 14.34216268200891
 """
 
 tle_lines = tle_string.strip().splitlines()
@@ -29,10 +29,11 @@ observer.date = datetime.now(timezone.utc)
 
 DIR_Elev_Pin = 20   # Direction GPIO Pin
 STEP_Elev_Pin = 21  # Step GPIO Pin
+elevDegPerStep = 0.9
 
 DIR_Az_Pin = 2
 STEP_Az_Pin = 3
-azDirection = 0
+azDegPerStep = 0.36
 
 GPIO.setmode(GPIO.BCM)
 
@@ -85,20 +86,20 @@ while (satellite.alt * toDeg) >= 0 :
     satellite.compute(observer)
 
 
-    if (currYAngle) < (satellite.alt * toDeg):
+    if (currYAngle) - ((elevDegPerStep + 0.1) / 2) < (satellite.alt * toDeg):
         print("ystep")
         singleStep_Elev(1)
-        currYAngle = currYAngle + 0.9
-    elif (currYAngle) >= (satellite.alt * toDeg):
+        currYAngle = currYAngle + elevDegPerStep
+    elif (currYAngle) + ((elevDegPerStep + 0.1) / 2) >= (satellite.alt * toDeg):
         print("ystep")
         singleStep_Elev(0)
-        currYAngle = currYAngle - 0.9
+        currYAngle = currYAngle - elevDegPerStep
 
-    if (currXAngle % 360) < (satellite.az * toDeg) :
+    if (currXAngle % 360) - ((azDegPerStep + 0.1) / 2) < (satellite.az * toDeg) :
         singleStep_Az(1)
-        currXAngle = currXAngle + 0.36
+        currXAngle = currXAngle + azDegPerStep
 
-    elif (currXAngle % 360) > (satellite.az * toDeg) :
+    elif (currXAngle % 360) + ((azDegPerStep + 0.1) / 2) >= (satellite.az * toDeg) :
         singleStep_Az(0)
-        currXAngle = currXAngle - 0.36
+        currXAngle = currXAngle - azDegPerStep
 GPIO.cleanup()
