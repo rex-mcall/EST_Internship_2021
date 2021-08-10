@@ -74,8 +74,8 @@ else:
     GPIO.output(DIR_Az_Pin, 1)
     azDirection = 1
 
-if dt.utcnow < riseTime :
-    timeTillRise = riseTime - datetime.now(timezone.utc)
+if datetime.utcnow() < riseTime :
+    timeTillRise = riseTime - datetime.utcnow()
     secondsToWait = timeTillRise.total_seconds()
     print("Waiting ", secondsToWait / 60 , " minutes till satellite rise.")
     sleep(secondsToWait + 5)
