@@ -88,11 +88,11 @@ while (satellite.alt * toDeg) >= 0 :
 
     if (currYAngle) < (satellite.alt * toDeg) + ((elevDegPerStep + 0.1)):
         print("ystep-")
-        #singleStep_Elev(1)
+        singleStep_Elev(1)
         currYAngle = currYAngle + elevDegPerStep
     elif (currYAngle) >= (satellite.alt * toDeg) - ((elevDegPerStep + 0.1)):
         print("ystep+")
-        #singleStep_Elev(0)
+        singleStep_Elev(0)
         currYAngle = currYAngle - elevDegPerStep
 
     # if (currXAngle % 360) < (satellite.az * toDeg) + ((azDegPerStep + 0.1)) :
