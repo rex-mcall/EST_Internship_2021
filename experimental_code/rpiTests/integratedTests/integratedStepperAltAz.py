@@ -87,19 +87,18 @@ while (satellite.alt * toDeg) >= 0 :
 
 
     if (currYAngle) < (satellite.alt * toDeg) + ((elevDegPerStep + 0.1)):
-        print("ystep")
-        singleStep_Elev(1)
+        print("ystep-")
+        #singleStep_Elev(1)
         currYAngle = currYAngle + elevDegPerStep
     elif (currYAngle) >= (satellite.alt * toDeg) - ((elevDegPerStep + 0.1)):
-        print("ystep")
-        singleStep_Elev(0)
+        print("ystep+")
+        #singleStep_Elev(0)
         currYAngle = currYAngle - elevDegPerStep
 
-    if (currXAngle % 360) < (satellite.az * toDeg) + ((azDegPerStep + 0.1)) :
-        singleStep_Az(1)
-        currXAngle = currXAngle + azDegPerStep
-
-    elif (currXAngle % 360) >= (satellite.az * toDeg) - ((azDegPerStep + 0.1)) :
-        singleStep_Az(0)
-        currXAngle = currXAngle - azDegPerStep
+    # if (currXAngle % 360) < (satellite.az * toDeg) + ((azDegPerStep + 0.1)) :
+    #     singleStep_Az(1)
+    #     currXAngle = currXAngle + azDegPerStep
+    # elif (currXAngle % 360) >= (satellite.az * toDeg) - ((azDegPerStep + 0.1)) :
+    #     singleStep_Az(0)
+    #     currXAngle = currXAngle - azDegPerStep
 GPIO.cleanup()
