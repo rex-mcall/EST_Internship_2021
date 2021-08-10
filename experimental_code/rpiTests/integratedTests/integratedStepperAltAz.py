@@ -54,7 +54,7 @@ def singleStep_Elev(direction):
     GPIO.output(STEP_Elev_Pin, GPIO.LOW)
     sleep(stepDelay)
 
-def singleStep_Az():
+def singleStep_Az(direction):
     GPIO.output(DIR_Az_Pin, direction)
     GPIO.output(STEP_Az_Pin, GPIO.HIGH)
     sleep(stepDelay)
