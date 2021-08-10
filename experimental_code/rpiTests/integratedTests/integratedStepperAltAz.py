@@ -10,8 +10,8 @@ toRad = pi / 180
 
 tle_string = """
 ONEWEB-0039             
-1 45146U 20008R   21222.48564789 -.00000547  00000-0 -16045-2 0  9996
-2 45146  87.8855  28.4737 0002346  81.2474 278.8919 13.10371370 76132
+1 27432U 02024C   21222.51420694 -.00000029  00000-0  89178-5 0  9996
+2 27432  99.0844 237.8183 0051439  74.6266  92.3084 14.14112356992878
 """
 
 tle_lines = tle_string.strip().splitlines()
@@ -55,6 +55,7 @@ def singleStep_Elev(direction):
     sleep(stepDelay)
 
 def singleStep_Az():
+    GPIO.output(DIR_Az_Pin, direction)
     GPIO.output(STEP_Az_Pin, GPIO.HIGH)
     sleep(stepDelay)
     GPIO.output(STEP_Az_Pin, GPIO.LOW)
@@ -68,12 +69,7 @@ maxAltTime = nextPass[2].datetime()
 setAzimuth = nextPass[5] * toDeg
 setTime = nextPass[4].datetime()
 
-if riseAzimuth > setAzimuth :
-    GPIO.output(DIR_Az_Pin, 0)
-    azDirection = 0
-else:
-    GPIO.output(DIR_Az_Pin, 1)
-    azDirection = 1
+
 
 if datetime.utcnow() < riseTime and riseTime < setTime:
     timeTillRise = riseTime - datetime.utcnow()
@@ -98,13 +94,11 @@ while (satellite.alt * toDeg) >= 0 :
         singleStep_Elev(0)
         currYAngle = currYAngle - 0.9
 
-    if not azDirection:
-        if (currXAngle % 360) < (satellite.az * toDeg) :
-            print("xstep")
-            singleStep_Az()
-            currXAngle = currXAngle + 0.36
-        if (currXAngle % 360) > (satellite.az * toDeg) :
-            print("xstep")
-            singleStep_Az()
-            currXAngle = currXAngle - 0.36
+    if (currYAngle % 360) < (satellite.az * toDeg) :
+        singleStep_Az(1)
+        currXAngle = currXAngle + 0.36
+
+    elif (currYAngle % 360) > (satellite.az * toDeg) :
+        singleStep_Az(0)
+        currXAngle = currXAngle - 0.36
 GPIO.cleanup()
