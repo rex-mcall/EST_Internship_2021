@@ -9,9 +9,9 @@ toDeg = 180 / pi
 toRad = pi / 180
 
 tle_string = """
-ONEWEB-0039             
-1 48567U 21041Q   21222.58334491  .00034532  00000-0  23271-2 0  9998
-2 48567  53.0539  87.9871 0001829  90.5215 262.8613 15.06379573  3590
+STARLINK-1289           
+1 45391U 20019AH  21222.36112864  .00000486  00000-0  51552-4 0  9994
+2 45391  53.0549  93.9981 0001828  81.2225 278.8971 15.06390905 77675
 """
 
 tle_lines = tle_string.strip().splitlines()
@@ -86,20 +86,20 @@ while (satellite.alt * toDeg) >= 0 :
     satellite.compute(observer)
 
 
-    if (currYAngle) < (satellite.alt * toDeg) + ((elevDegPerStep + 0.1) / 2):
+    if (currYAngle) < (satellite.alt * toDeg) + ((elevDegPerStep + 0.1)):
         print("ystep")
         singleStep_Elev(1)
         currYAngle = currYAngle + elevDegPerStep
-    elif (currYAngle) >= (satellite.alt * toDeg) - ((elevDegPerStep + 0.1) / 2):
+    elif (currYAngle) >= (satellite.alt * toDeg) - ((elevDegPerStep + 0.1)):
         print("ystep")
         singleStep_Elev(0)
         currYAngle = currYAngle - elevDegPerStep
 
-    if (currXAngle % 360) < (satellite.az * toDeg) + ((azDegPerStep + 0.1) / 2) :
+    if (currXAngle % 360) < (satellite.az * toDeg) + ((azDegPerStep + 0.1)) :
         singleStep_Az(1)
         currXAngle = currXAngle + azDegPerStep
 
-    elif (currXAngle % 360) >= (satellite.az * toDeg) - ((azDegPerStep + 0.1) / 2) :
+    elif (currXAngle % 360) >= (satellite.az * toDeg) - ((azDegPerStep + 0.1)) :
         singleStep_Az(0)
         currXAngle = currXAngle - azDegPerStep
 GPIO.cleanup()
