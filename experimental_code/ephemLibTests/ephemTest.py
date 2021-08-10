@@ -21,7 +21,10 @@ observer.date = dt.datetime(2021, 7, 28, 19, 24, 24)
 
 satellite.compute(observer)
 
-
+x = observer.next_pass(satellite)
+z = observer.next_pass(satellite, singlepass=False)
+y = x[2].datetime()
+k = z[2].datetime()
 # satellite.alt is a special Angle type. Multuiplying by 180/pi converts to normal degrees
 print("alt = ", satellite.alt)
 print("az  = ", satellite.az )

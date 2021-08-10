@@ -14,3 +14,6 @@ matplotlib
 
 ---
 
+PyEphem
+- Uses the C libastro to predict satellite alt/az from TLE
+- pip install pyephem
