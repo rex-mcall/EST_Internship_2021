@@ -65,7 +65,7 @@ nextPass = observer.next_pass(satellite, singlepass=False)
 riseTime = nextPass[0].datetime()
 riseAzimuth = nextPass[1] * toDeg
 maxAltTime = nextPass[2].datetime()
-setAzimuth = nextPass[5] * toDeg()
+setAzimuth = nextPass[5] * toDeg
 
 if riseAzimuth > setAzimuth :
     GPIO.output(DIR_Az_Pin, 0)
