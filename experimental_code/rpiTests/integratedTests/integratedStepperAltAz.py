@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 
 import ephem
 import datetime as dt
+from datetime import datetime, timezone
 from math import *
 toDeg = 180 / pi
 toRad = pi / 180
@@ -24,7 +25,7 @@ observer = ephem.Observer()
 observer.lat = latitude * ephem.degree
 observer.lon = longitude * ephem.degree
 observer.elev = 13
-observer.date = dt.utcnow()
+observer.date = datetime.now(timezone.utc)
 
 DIR_Elev_Pin = 20   # Direction GPIO Pin
 STEP_Elev_Pin = 21  # Step GPIO Pin
@@ -74,16 +75,16 @@ else:
     azDirection = 1
 
 if dt.utcnow < riseTime :
-    timeTillRise = riseTime - dt.utcnow()
+    timeTillRise = riseTime - datetime.now(timezone.utc)
     secondsToWait = timeTillRise.total_seconds()
     print("Waiting ", secondsToWait / 60 , " minutes till satellite rise.")
     sleep(secondsToWait + 5)
 
-observer.date = dt.utcnow()
+observer.date = datetime.now(timezone.utc)
 satellite.compute(observer)
 
 while (satellite.alt * toDeg) >= 0 :
-    observer.date = dt.utcnow()
+    observer.date = datetime.now(timezone.utc)
     satellite.compute(observer)
 
     if dt.now < maxAltTime :
