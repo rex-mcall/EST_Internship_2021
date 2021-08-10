@@ -10,8 +10,8 @@ toRad = pi / 180
 
 tle_string = """
 STARLINK-1289           
-1 25854U 99037D   21222.35240204 -.00000091  00000-0 -33973-3 0  9991
-2 25854  51.9881  90.1432 0004248  31.6097 328.4974 11.55072698987466
+1 45102U 20006BL  21222.32244386  .00000333  00000-0  41274-4 0  9992
+2 45102  53.0541 194.1758 0001205  49.3216 310.7877 15.06392063 84954
 """
 
 tle_lines = tle_string.strip().splitlines()
@@ -85,13 +85,14 @@ while (satellite.alt * toDeg) >= 0 :
     observer.date = datetime.now(timezone.utc)
     satellite.compute(observer)
 
+    elevErrDelta = (satellite.alt * toDeg) - currYAngle # <0 motor too high, >0 motor too low
 
-    if (currYAngle) < (satellite.alt * toDeg) + ((elevDegPerStep + 0.1)):
-        print("ystep-")
+    if elevErrDelta > 0 and elevErrDelta <= (elevDegPerStep * 3/2):
+        print("ystep+")
         singleStep_Elev(1)
         currYAngle = currYAngle + elevDegPerStep
-    elif (currYAngle) >= (satellite.alt * toDeg) - ((elevDegPerStep + 0.1)):
-        print("ystep+")
+    elif elevErrDelta <= 0 and elevErrDelta >= (elevDegPerStep * 3/2):
+        print("ystep-")
         singleStep_Elev(0)
         currYAngle = currYAngle - elevDegPerStep
 
