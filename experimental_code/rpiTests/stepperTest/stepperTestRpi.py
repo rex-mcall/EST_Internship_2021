@@ -5,16 +5,16 @@ DIR = 20   # Direction GPIO Pin
 STEP = 21  # Step GPIO Pin
 CW = 1     # Clockwise Rotation
 CCW = 0    # Counterclockwise Rotation
-SPR = 1600   # Steps per Revolution (360 / 1.8)
+SPR = 4000   # Steps per Revolution (360 / 1.8)
 
-secondsPerRev = 0.125
+secondsPerRev = 8
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIR, GPIO.OUT)
 GPIO.setup(STEP, GPIO.OUT)
 GPIO.output(DIR, CW)
 
 step_count = SPR
-delay = 1 / (SPR / 2)
+delay = secondsPerRev / (SPR * 2)
 
 for x in range(step_count):
     GPIO.output(STEP, GPIO.HIGH)
