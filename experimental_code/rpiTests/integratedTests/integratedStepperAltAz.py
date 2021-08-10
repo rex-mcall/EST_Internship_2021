@@ -10,8 +10,8 @@ toRad = pi / 180
 
 tle_string = """
 STARLINK-1558           
-1 25114U 97084C   21222.46374158  .00000049  00000-0  61349-4 0  9998
-2 25114  45.0145 234.9883 0007949 315.1750  44.8456 14.39218895238523
+1 32788U 08021F   21222.47982694  .00000514  00000-0  51057-4 0  9999
+2 32788  97.5073 214.8797 0013451  88.4510 271.8252 14.95683421721931
 """
 
 tle_lines = tle_string.strip().splitlines()
@@ -66,6 +66,7 @@ riseTime = nextPass[0].datetime()
 riseAzimuth = nextPass[1] * toDeg
 maxAltTime = nextPass[2].datetime()
 setAzimuth = nextPass[5] * toDeg
+setTime = nextPass[4].datetime()
 
 if riseAzimuth > setAzimuth :
     GPIO.output(DIR_Az_Pin, 0)
@@ -74,7 +75,7 @@ else:
     GPIO.output(DIR_Az_Pin, 1)
     azDirection = 1
 
-if datetime.utcnow() < riseTime :
+if datetime.utcnow() < riseTime and riseTime < setTime:
     timeTillRise = riseTime - datetime.utcnow()
     secondsToWait = timeTillRise.total_seconds()
     print("Waiting ", secondsToWait / 60 , " minutes till satellite rise.")
