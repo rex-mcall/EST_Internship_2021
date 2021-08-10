@@ -94,11 +94,11 @@ while (satellite.alt * toDeg) >= 0 :
         singleStep_Elev(0)
         currYAngle = currYAngle - 0.9
 
-    if (currYAngle % 360) < (satellite.az * toDeg) :
+    if (currXAngle % 360) < (satellite.az * toDeg) :
         singleStep_Az(1)
         currXAngle = currXAngle + 0.36
 
-    elif (currYAngle % 360) > (satellite.az * toDeg) :
+    elif (currXAngle % 360) > (satellite.az * toDeg) :
         singleStep_Az(0)
         currXAngle = currXAngle - 0.36
 GPIO.cleanup()
