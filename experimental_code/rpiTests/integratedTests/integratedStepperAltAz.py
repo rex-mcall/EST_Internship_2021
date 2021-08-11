@@ -9,9 +9,9 @@ toDeg = 180 / pi
 toRad = pi / 180
 
 tle_string = """
-STARLINK-1289           
-1 45102U 20006BL  21222.32244386  .00000333  00000-0  41274-4 0  9992
-2 45102  53.0541 194.1758 0001205  49.3216 310.7877 15.06392063 84954
+STARLINK-1697           
+1 46546U 20070Q   21222.05241819 -.00000655  00000-0 -25077-4 0  9996
+2 46546  53.0545 125.3831 0002023  80.9211 279.2007 15.06407408 47395
 """
 
 tle_lines = tle_string.strip().splitlines()
@@ -87,11 +87,11 @@ while (satellite.alt * toDeg) >= 0 :
 
     elevErrDelta = (satellite.alt * toDeg) - currYAngle # <0 motor too high, >0 motor too low
 
-    if elevErrDelta > 0 and elevErrDelta <= (elevDegPerStep * 3/2):
+    if elevErrDelta >= (elevDegPerStep * 3/2):
         print("ystep+")
         singleStep_Elev(1)
         currYAngle = currYAngle + elevDegPerStep
-    elif elevErrDelta <= 0 and elevErrDelta >= (elevDegPerStep * 3/2):
+    elif elevErrDelta <= (elevDegPerStep * 3/2):
         print("ystep-")
         singleStep_Elev(0)
         currYAngle = currYAngle - elevDegPerStep
