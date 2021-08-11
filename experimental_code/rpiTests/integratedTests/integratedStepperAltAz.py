@@ -91,7 +91,7 @@ while (satellite.alt * toDeg) >= 0 :
         print("ystep+")
         singleStep_Elev(1)
         currYAngle = currYAngle + elevDegPerStep
-    elif elevErrDelta <= (elevDegPerStep * 3/2):
+    elif elevErrDelta <= (-elevDegPerStep * 3/2):
         print("ystep-")
         singleStep_Elev(0)
         currYAngle = currYAngle - elevDegPerStep
