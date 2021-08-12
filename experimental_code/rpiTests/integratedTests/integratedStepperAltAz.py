@@ -13,9 +13,9 @@ toRad = pi / 180
 
 #tle of the current satellite to track
 tle_string = """
-STARLINK-1274           
-1 45387U 20019AD  21222.35743337 -.00000893  00000-0 -41067-4 0  9997
-2 45387  53.0555  94.0227 0002062  68.5121 291.6088 15.06398712 77942
+STARLINK-2736           
+1 48640U 21044C   21224.58334491 -.00006554  00000-0 -42144-3 0  9991
+2 48640  53.0533  54.0006 0001698 107.2301 200.8002 15.06403949  3596
 """
 
 # parse tle data and initialize satellite as an EarthSatellite object
@@ -54,10 +54,10 @@ currStepperElevation = 0
 
 # geared down ratios for degrees per step
 azDegPerStep = 0.36 / 4 # 1:5 @ 1/4 step
-elevDegPerStep = 0.9 # 1:2 at full step
+elevDegPerStep = 0.9 / 4# 1:2 at full step
 
 # amount of time the step pulse is high and low
-stepDelay = 0.00001
+stepDelay = 0.001
 
 # defines how to drive the elevation stepper
 def singleStep_Elev(direction):
@@ -85,7 +85,8 @@ setAzimuth = nextPass[5] * toDeg
 setTime = nextPass[4].datetime()
 
 
-# checks to see if the satellite is currently in the sky and informs the user of how long until the satellite is in the sky
+# checks to see if the satellite is currently in the sky 
+# if sat is not in sky, inform the user of how long until the satellite is in the sky
 if datetime.utcnow() < riseTime and riseTime < setTime:
     timeTillRise = riseTime - datetime.utcnow()
     secondsToWait = timeTillRise.total_seconds()
@@ -96,20 +97,28 @@ if datetime.utcnow() < riseTime and riseTime < setTime:
 observer.date = datetime.now(timezone.utc)
 satellite.compute(observer)
 
+# temp var for print statements
+currIteration = 0
+
 while (satellite.alt * toDeg) >= 0 :
     # refreshes the satellite position with the current time
     observer.date = datetime.now(timezone.utc)
     satellite.compute(observer)
+    if currIteration % 1000 == 0:
+        print("azimuth = ", satellite.az, " --- stepper position az = ", currStepperAzimuth)
+        print("elev = ", satellite.alt, " --- stepper position elev = ", currStepperElevation)
+        print("- - - - - - - - - - - - - - - ")
+    currIteration = currIteration + 1
 
     # calculates the angle to the correct elevation
     elevErrDelta = (satellite.alt * toDeg) - currStepperElevation # <0 motor too high, >0 motor too low
 
     # pulses the elevation stepper motor in the correct direction
     if elevErrDelta >= (elevDegPerStep * 3/2):
-        singleStep_Elev(1)
+        singleStep_Elev(0)
         currStepperElevation = currStepperElevation + elevDegPerStep
     elif elevErrDelta <= (-elevDegPerStep * 3/2):
-        singleStep_Elev(0)
+        singleStep_Elev(1)
         currStepperElevation = currStepperElevation - elevDegPerStep
 
     # determines the most efficient direction to get to the correct azimuth
@@ -132,3 +141,11 @@ while (satellite.alt * toDeg) >= 0 :
 
 # release GPIO pins back to the Pi
 GPIO.cleanup()
+
+# if __name__ == '__main__':
+#     try:
+#         main()
+#     except KeyboardInterrupt:
+#         print("Interrupt")
+#         GPIO.cleanup()
+#         exit(0)
