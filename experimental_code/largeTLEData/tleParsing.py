@@ -30,4 +30,28 @@ for line in data:
         currSatTLE = [data[currIndex], data[currIndex + 1], data[currIndex + 2]]
         satTLEs.append(currSatTLE)
     currIndex = currIndex + 1
+
+currentlyVisibleSats = []
+soonVisibleSats = []
+
+for tleLines in satTLEs:
+    satellite = ephem.readtle(tleLines[0], tleLines[1], tleLines[2])
+    satellite.compute(observer)
+
+    nextPass = observer.next_pass(satellite, singlepass=False)
+    riseTime = nextPass[0].datetime()
+    riseAzimuth = nextPass[1] * toDeg
+    maxAltTime = nextPass[2].datetime()
+    maxAlt = nextPass[3] * toDeg
+    setTime = nextPass[4].datetime()
+    setAzimuth = nextPass[5] * toDeg
+
+    currentlyVisible = False
+    soonVisible = False
+    if datetime.utcnow() < riseTime and riseTime > setTime: # current time is less than the next rise and setTime hasn't occured yet
+        currentlyVisible = True
+    elif 
+
+
+
 print(x)

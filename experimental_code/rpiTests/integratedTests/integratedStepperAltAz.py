@@ -81,8 +81,9 @@ nextPass = observer.next_pass(satellite, singlepass=False)
 riseTime = nextPass[0].datetime()
 riseAzimuth = nextPass[1] * toDeg
 maxAltTime = nextPass[2].datetime()
-setAzimuth = nextPass[5] * toDeg
+maxAlt = nextPass[3] * toDeg
 setTime = nextPass[4].datetime()
+setAzimuth = nextPass[5] * toDeg
 
 
 # checks to see if the satellite is currently in the sky 
