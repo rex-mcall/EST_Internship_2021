@@ -142,11 +142,3 @@ while (satellite.alt * toDeg) >= 0 :
 
 # release GPIO pins back to the Pi
 GPIO.cleanup()
-
-# if __name__ == '__main__':
-#     try:
-#         main()
-#     except KeyboardInterrupt:
-#         print("Interrupt")
-#         GPIO.cleanup()
-#         exit(0)

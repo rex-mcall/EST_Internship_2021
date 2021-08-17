@@ -48,9 +48,12 @@ for tleLines in satTLEs:
 
     currentlyVisible = False
     soonVisible = False
+
+    timeDelta = riseTime - datetime.utcnow()
     if datetime.utcnow() < riseTime and riseTime > setTime: # current time is less than the next rise and setTime hasn't occured yet
         currentlyVisible = True
-    elif 
+    elif timeDelta <= dt.timedelta(minutes=2):
+        soonVisible = True
 
 
 

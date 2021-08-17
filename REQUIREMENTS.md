@@ -25,3 +25,9 @@ Flask
 - pip install flask
 
 ---
+
+tkinter
+- GUI library for python
+- pip install tk
+
+---
