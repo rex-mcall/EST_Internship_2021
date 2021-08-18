@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from math import *
 from functools import partial
 from threading import Thread
+import satelliteCalculations
 from satelliteCalculations import *
 
 class mainWindow():
@@ -64,7 +65,22 @@ class mainWindow():
         self.startSearch_btn = Button(self.search_frame, text='Search', command = self.runSatelliteSearch)
         self.startSearch_btn.grid(row=4, column=1, padx=(10), pady=10)
 
+        # motor positions frame
+        self.motorInfoFrame = Frame(self.master_window)
+        self.motorInfoFrame.pack(fill='y')
+
+        self.satInfo_Label = Label(self.motorInfoFrame, text="Satellite not selected")
+        self.satInfo_Label.grid(row=0, column=0, padx=(10), pady=10)
+
+        self.motorInfo_Label = Label(self.motorInfoFrame, text="Motors not initialized")
+        self.motorInfo_Label.grid(row=1, column=0, padx=(10), pady=10)
+
+        self.master_window.after(50, func=self.updateAppInfoFrame)
+
         self.master_window.mainloop()
+
+
+
 
     def runSatelliteSearch(self):
         satName = self.search_Entry.get() if self.search_Entry.get() != '' else None
@@ -97,16 +113,38 @@ class mainWindow():
             self.motors.setShouldTrack(True)
         except AttributeError:
             self.motors = stepperMotors(satellite=sat)
-        motorThread = Thread(target=self.runMotors)
-        motorThread.start()
+        try:
+            temp = self.motorThread
+        except AttributeError:
+            self.motorThread = Thread(target=self.runMotors)
+            self.motorThread.daemon = True
+            self.motorThread.start()
 
     def runMotors(self):
         self.motors.singleStepAltAz()
     def stopMotors(self):
         self.motors.setShouldTrack(False)
 
+    def updateAppInfoFrame(self):
+        try:
+            satElev =   round(self.motors.satellite.alt * toDeg, 2)
+            satAz =     round(self.motors.satellite.az * toDeg, 2)
+            motorElev = round(self.motors.currStepperElevation, 2)
+            motorAz =   round(self.motors.currStepperAzimuth, 2)
+        except AttributeError:
+            self.master_window.after(50, func=self.updateAppInfoFrame)
+            return
+
+        self.satInfo_Label['text'] =   "Satellite  : [Elev={0:.2f}, Az={1:.2f}]".format(satElev, satAz)
+        self.motorInfo_Label['text'] = "Motors     : [Elev={0:.2f}, Az={1:.2f}]".format(motorElev, motorAz)
+        self.master_window.after(50, func=self.updateAppInfoFrame)
     def Close(self):
         self.master_window.destroy()
+        try:
+            self.motors.endThread()
+        except Exception:
+            pass
+        sleep(5)
         exit(0)
 
 
