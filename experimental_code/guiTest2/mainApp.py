@@ -3,7 +3,8 @@ import ephem
 import datetime as dt
 from datetime import datetime, timezone
 from math import *
-from satelliteCalculations import satelliteSearch
+from functools import partial
+from satelliteCalculations import satelliteSearch, stepperMotors
 
 class mainWindow():
     def __init__(self):
@@ -78,15 +79,23 @@ class mainWindow():
         self.searchResultButtonPopulation(top5Results)
 
     def searchResultButtonPopulation(self, top5Results):
-        self.results_Frame = Frame(self.master_window)
-        self.results_Frame.pack(fill='y')
+        try:
+            temp = self.results_Frame
+        except AttributeError:
+            self.results_Frame = Frame(self.master_window)
+            self.results_Frame.pack(fill='y')
 
+        for widget in self.results_Frame.winfo_children():
+            widget.destroy()
         rowCounter = 0
         for satResult in top5Results:
-            btn = Button(self.results_Frame, text=satResult.name)
+            btn = Button(self.results_Frame, text=satResult.name, command= partial(self.resultClick, satResult))
             btn.grid(row=rowCounter, column=0)
             rowCounter = rowCounter + 1
 
+    def resultClick(self, sat):
+        self.master_window.destroy()
+        infoWindow(satellite=sat)
     def switchWindow(self):
         self.master_window.destroy()
         infoWindow()
@@ -94,33 +103,52 @@ class mainWindow():
         self.master_window.destroy()
 
 class infoWindow():
-    def __init__(self):
+    def __init__(self, satellite = None):
+        self.satellite = satellite
+
         self.master_window = Tk()
         self.master_window.title("Satellite Tracker")
         self.master_window.attributes("-fullscreen", True)
 
         # buttons bar -----------------------------------------------
-        buttons_frame = Frame(self.master_window)
-        buttons_frame.pack(fill='y')
+        self.buttons_frame = Frame(self.master_window)
+        self.buttons_frame.pack(fill='y')
 
-        btn_Disable = Button(buttons_frame, text='Disable Motors')
-        btn_Disable.grid(row=0, column=0, padx=(10), pady=10)
+        self.btn_Disable = Button(self.buttons_frame, text='Disable Motors')
+        self.btn_Disable.grid(row=0, column=0, padx=(10), pady=10)
 
-        btn_Calibrate = Button(buttons_frame, text='Calibrate Sensors')
-        btn_Calibrate.grid(row=0, column=1, padx=(10), pady=10)
+        self.btn_Calibrate = Button(self.buttons_frame, text='Calibrate Sensors')
+        self.btn_Calibrate.grid(row=0, column=1, padx=(10), pady=10)
 
-        btn_Home = Button(buttons_frame, text='Home Motors')
-        btn_Home.grid(row=0, column=2, padx=(10), pady=10)
+        self.btn_Home = Button(self.buttons_frame, text='Home Motors')
+        self.btn_Home.grid(row=0, column=2, padx=(10), pady=10)
 
-        btn_Laser = Button(buttons_frame, text='Laser On/Off')
-        btn_Laser.grid(row=0, column=3, padx=(10), pady=10)
+        self.btn_Laser = Button(self.buttons_frame, text='Laser On/Off')
+        self.btn_Laser.grid(row=0, column=3, padx=(10), pady=10)
 
-        btn_switchWindow = Button(buttons_frame, text='Switch to Search Page', command=self.switchWindow)
-        btn_switchWindow.grid(row=0, column=4, padx = 10, pady = 10)
+        self.btn_switchWindow = Button(self.buttons_frame, text='Switch to Search Page', command=self.switchWindow)
+        self.btn_switchWindow.grid(row=0, column=4, padx = 10, pady = 10)
 
-        btn_closeApp = Button(buttons_frame, text='Exit Application', command=self.Close)
-        btn_closeApp.grid(row=0, column=5, padx = 10, pady = 10)
+        self.btn_closeApp = Button(self.buttons_frame, text='Exit Application', command=self.Close)
+        self.btn_closeApp.grid(row=0, column=5, padx = 10, pady = 10)
 
+        # info frame -----------------------------------------------
+        self.info_Frame = Frame(self.master_window)
+        self.info_Frame.pack(fill='both')
+
+        if self.satellite != None:
+            self.motors = stepperMotors(satellite=self.satellite)
+            self.master_window.after(0, motors.singleStepAltAz)
+
+            self.info_label = Label(self.info_Frame, text=self.motors.satellite.name)
+            self.info_label.grid(row=0, column=0)
+            
+            self.satAz_label = Label(self.info_Frame, text="Satellite Azimuth: " + self.motors.satellite.az)
+            self.satAz_label.grid(row=1, column=0)
+            self.satElev_label = label(self.info_Frame, text="Satellite Elevation: " + self.motors.satellite.alt)
+            self.satElev_label.grid(row=2, column=0)
+
+        self.master_window.mainloop()
     def switchWindow(self):
         self.master_window.destroy()
         mainWindow()
