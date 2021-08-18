@@ -94,7 +94,7 @@ class mainWindow():
     def resultClick(self, sat):
         try:
             self.motors.selectSatellite(sat)
-            self.motors.shouldTrack(True)
+            self.motors.setShouldTrack(True)
         except AttributeError:
             self.motors = stepperMotors(satellite=sat)
         motorThread = Thread(target=self.runMotors)
