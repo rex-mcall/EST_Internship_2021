@@ -13,9 +13,9 @@ toRad = pi / 180
 
 #tle of the current satellite to track
 tle_string = """
-STARLINK-2736           
-1 48640U 21044C   21224.58334491 -.00006554  00000-0 -42144-3 0  9991
-2 48640  53.0533  54.0006 0001698 107.2301 200.8002 15.06403949  3596
+STARLINK-1611           
+1 46147U 20057AG  21229.52936365  .00000320  00000-0  40380-4 0  9995
+2 46147  53.0539 231.8237 0000733  47.6634 312.4417 15.06382423 56342
 """
 
 # parse tle data and initialize satellite as an EarthSatellite object

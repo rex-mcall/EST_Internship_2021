@@ -23,7 +23,7 @@ observer.elev = 13
 observer.date = datetime.now(timezone.utc)
 
 
-x = open("experimental_code\\guiTest2\\tleData.txt")
+x = open("experimental_code/guiTest2/tleData.txt")
 data = x.read().splitlines()
 satTLEs = []
 currIndex = 0
@@ -42,7 +42,7 @@ class satelliteSearch():
     def getTop5Results(self):
         topResults = []
         for tleLines in satTLEs:
-            if len(topResults) >= 5:
+            if len(topResults) >= 1:
                 return topResults
             satellite = ephem.readtle(tleLines[0], tleLines[1], tleLines[2])
             satellite.compute(observer)
@@ -117,78 +117,85 @@ class stepperMotors():
 
         # geared down ratios for degrees per step
         self.azDegPerStep = 0.36 / 4 # 1:5 @ 1/4 step
-        elevDegPerStep = 0.9 / 4# 1:2 at full step
+        self.elevDegPerStep = 0.9 / 4# 1:2 at full step
 
         # amount of time the step pulse is high and low
         self.stepDelay = 0.001
 
+        self.shouldTrack = False
+
     def singleStepAltAz(self):
-        # refreshes the satellite position with the current time
-        observer.date = datetime.now(timezone.utc)
-        self.satellite.compute(observer)
+        while True:
+            while self.shouldTrack:
+                # refreshes the satellite position with the current time
+                observer.date = datetime.now(timezone.utc)
+                self.satellite.compute(observer)
 
-        # make sure satellite is above horizon, else reset motors to home position
-        if self.satellite.alt * toDeg > 0:
+                # make sure satellite is above horizon, else reset motors to home position
+                if self.satellite.alt * toDeg > 0:
 
-            # calculates the angle to the correct elevation
-            elevErrDelta = (self.satellite.alt * toDeg) - self.currStepperElevation # <0 motor too high, >0 motor too low
+                    # calculates the angle to the correct elevation
+                    elevErrDelta = (self.satellite.alt * toDeg) - self.currStepperElevation # <0 motor too high, >0 motor too low
 
-            # pulses the elevation stepper motor in the correct direction
-            if elevErrDelta >= (elevDegPerStep * 3/2):
-                self.singleStep_Elev(0)
-                self.currStepperElevation = self.currStepperElevation + elevDegPerStep
-            elif elevErrDelta <= (-elevDegPerStep * 3/2):
-                self.singleStep_Elev(1)
-                self.currStepperElevation = self.currStepperElevation - elevDegPerStep
+                    # pulses the elevation stepper motor in the correct direction
+                    if elevErrDelta >= (self.elevDegPerStep * 3/2):
+                        self.singleStep_Elev(0)
+                        self.currStepperElevation = self.currStepperElevation + self.elevDegPerStep
+                    elif elevErrDelta <= (-self.elevDegPerStep * 3/2):
+                        self.singleStep_Elev(1)
+                        self.currStepperElevation = self.currStepperElevation - self.elevDegPerStep
 
-            # determines the most efficient direction to get to the correct azimuth
-            azErrDelta = 0
-            azMotorHomeAngle = self.satellite.az * toDeg
-            if abs((azMotorHomeAngle) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) + 360) - self.currStepperAzimuth) and abs((azMotorHomeAngle) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) - 360) - self.currStepperAzimuth):
-                azErrDelta = (self.satellite.az * toDeg) - self.currStepperAzimuth
-            elif abs(((azMotorHomeAngle) + 360) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) - 360) - self.currStepperAzimuth):
-                azErrDelta = ((self.satellite.az * toDeg) + 360) - self.currStepperAzimuth
-            else:
-                azErrDelta = ((azMotorHomeAngle) - 360) - self.currStepperAzimuth
+                    # determines the most efficient direction to get to the correct azimuth
+                    azErrDelta = 0
+                    azMotorHomeAngle = self.satellite.az * toDeg
+                    if abs((azMotorHomeAngle) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) + 360) - self.currStepperAzimuth) and abs((azMotorHomeAngle) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) - 360) - self.currStepperAzimuth):
+                        azErrDelta = (self.satellite.az * toDeg) - self.currStepperAzimuth
+                    elif abs(((azMotorHomeAngle) + 360) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) - 360) - self.currStepperAzimuth):
+                        azErrDelta = ((self.satellite.az * toDeg) + 360) - self.currStepperAzimuth
+                    else:
+                        azErrDelta = ((azMotorHomeAngle) - 360) - self.currStepperAzimuth
 
-            # pulses the azimuth stepper motor in the correct direction
-            if azErrDelta >= (self.azDegPerStep * 3/2):
-                self.singleStep_Az(1)
-                self.currStepperAzimuth = self.currStepperAzimuth + self.azDegPerStep
-            elif azErrDelta <= (-self.azDegPerStep * 3/2) :
-                self.singleStep_Az(0)
-                self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
-        # reset motors to home position
-        else:
-            # calculates the angle to the correct elevation
-            elevMotorHomeAngle = 0
-            elevErrDelta = elevMotorHomeAngle - self.currStepperElevation # <0 motor too high, >0 motor too low
+                    # pulses the azimuth stepper motor in the correct direction
+                    if azErrDelta >= (self.azDegPerStep * 3/2):
+                        self.singleStep_Az(1)
+                        self.currStepperAzimuth = self.currStepperAzimuth + self.azDegPerStep
+                    elif azErrDelta <= (-self.azDegPerStep * 3/2) :
+                        self.singleStep_Az(0)
+                        self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
+                # reset motors to home position
+                else:
+                    # calculates the angle to the correct elevation
+                    elevMotorHomeAngle = 0
+                    elevErrDelta = elevMotorHomeAngle - self.currStepperElevation # <0 motor too high, >0 motor too low
 
-            # pulses the elevation stepper motor in the correct direction
-            if elevErrDelta >= (elevDegPerStep * 3/2):
-                self.singleStep_Elev(0)
-                self.currStepperElevation = self.currStepperElevation + elevDegPerStep
-            elif elevErrDelta <= (-elevDegPerStep * 3/2):
-                self.singleStep_Elev(1)
-                self.currStepperElevation = self.currStepperElevation - elevDegPerStep
+                    # pulses the elevation stepper motor in the correct direction
+                    if elevErrDelta >= (self.elevDegPerStep * 3/2):
+                        self.singleStep_Elev(0)
+                        self.currStepperElevation = self.currStepperElevation + self.elevDegPerStep
+                    elif elevErrDelta <= (-self.elevDegPerStep * 3/2):
+                        self.singleStep_Elev(1)
+                        self.currStepperElevation = self.currStepperElevation - self.elevDegPerStep
 
-            # determines the most efficient direction to get to the correct azimuth
-            azErrDelta = 0
-            azMotorHomeAngle = 0
-            if abs((azMotorHomeAngle) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) + 360) - self.currStepperAzimuth) and abs((azMotorHomeAngle) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) - 360) - self.currStepperAzimuth):
-                azErrDelta = (self.satellite.az * toDeg) - self.currStepperAzimuth
-            elif abs(((azMotorHomeAngle) + 360) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) - 360) - self.currStepperAzimuth):
-                azErrDelta = ((self.satellite.az * toDeg) + 360) - self.currStepperAzimuth
-            else:
-                azErrDelta = ((azMotorHomeAngle) - 360) - self.currStepperAzimuth
+                    # determines the most efficient direction to get to the correct azimuth
+                    azErrDelta = 0
+                    azMotorHomeAngle = 0
+                    if abs((azMotorHomeAngle) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) + 360) - self.currStepperAzimuth) and abs((azMotorHomeAngle) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) - 360) - self.currStepperAzimuth):
+                        azErrDelta = (self.satellite.az * toDeg) - self.currStepperAzimuth
+                    elif abs(((azMotorHomeAngle) + 360) - self.currStepperAzimuth) < abs(((azMotorHomeAngle) - 360) - self.currStepperAzimuth):
+                        azErrDelta = ((self.satellite.az * toDeg) + 360) - self.currStepperAzimuth
+                    else:
+                        azErrDelta = ((azMotorHomeAngle) - 360) - self.currStepperAzimuth
 
-            # pulses the azimuth stepper motor in the correct direction
-            if azErrDelta >= (self.azDegPerStep * 3/2):
-                self.singleStep_Az(1)
-                self.currStepperAzimuth = self.currStepperAzimuth + self.azDegPerStep
-            elif azErrDelta <= (-self.azDegPerStep * 3/2) :
-                self.singleStep_Az(0)
-                self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
+                    # pulses the azimuth stepper motor in the correct direction
+                    if azErrDelta >= (self.azDegPerStep * 3/2):
+                        self.singleStep_Az(1)
+                        self.currStepperAzimuth = self.currStepperAzimuth + self.azDegPerStep
+                    elif azErrDelta <= (-self.azDegPerStep * 3/2) :
+                        self.singleStep_Az(0)
+                        self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
+                    
+                    if azErrDelta < 1 and elevErrDelta < 1:
+                        self.shouldTrack=False
 
     # defines how to drive the elevation stepper
     def singleStep_Elev(self, direction):
@@ -205,6 +212,12 @@ class stepperMotors():
         sleep(self.stepDelay)
         GPIO.output(self.STEP_Az_Pin, GPIO.LOW)
         sleep(self.stepDelay)
+
+    def selectSatellite(self, newSatellite):
+        self.satellite = newSatellite
+
+    def setShouldTrack(self, trackBool):
+        self.shouldTrack = trackBool
 
     def cleanupGPIO():
         GPIO.cleanup()
