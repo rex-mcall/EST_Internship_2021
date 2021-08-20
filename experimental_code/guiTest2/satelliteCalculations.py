@@ -34,7 +34,7 @@ GPIO.setup(STEP_Elev_Pin, GPIO.OUT)
 GPIO.setup(DIR_Az_Pin, GPIO.OUT)
 GPIO.setup(STEP_Az_Pin, GPIO.OUT)
 
-x = open("experimental_code/guiTest2/tleData.txt")
+x = open("tleData.txt")
 data = x.read().splitlines()
 satTLEs = []
 currIndex = 0
