@@ -22,17 +22,57 @@ observer.lon = longitude * ephem.degree
 observer.elev = 13
 observer.date = datetime.now(timezone.utc)
 
-DIR_Elev_Pin = 20   # Direction GPIO Pin Elevation motor
-STEP_Elev_Pin = 21  # Step GPIO Pin Elevation
-DIR_Az_Pin = 2 # Direction GPIO Pin Azimuth motor
-STEP_Az_Pin = 3 # Step GPIO Pin Azimuth motor
+# elev motor driver pins
+elev_dir_pin    = 21
+elev_step_pin   = 20
+elev_ms3_pin    = 26
+elev_ms2_pin    = 19
+elev_ms1_pin    = 13
+elev_enable_pin =  6
+
+# az motor driver pins
+az_dir_pin    = 24
+az_step_pin   = 23
+az_ms3_pin    = 22
+az_ms2_pin    = 27
+az_ms1_pin    = 17
+az_enable_pin =  4
 
 # initializing stepper motor pins
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(DIR_Elev_Pin, GPIO.OUT)
-GPIO.setup(STEP_Elev_Pin, GPIO.OUT)
-GPIO.setup(DIR_Az_Pin, GPIO.OUT)
-GPIO.setup(STEP_Az_Pin, GPIO.OUT)
+
+# setup elev motor pins
+GPIO.setup(elev_dir_pin, GPIO.OUT)
+GPIO.setup(elev_step_pin, GPIO.OUT)
+GPIO.setup(elev_ms3_pin, GPIO.OUT)
+GPIO.setup(elev_ms2_pin, GPIO.OUT)
+GPIO.setup(elev_ms1_pin, GPIO.OUT)
+GPIO.setup(elev_enable_pin, GPIO.OUT)
+
+#setup az motor pins
+GPIO.setup(az_dir_pin, GPIO.OUT)
+GPIO.setup(az_step_pin, GPIO.OUT)
+GPIO.setup(az_ms3_pin, GPIO.OUT)
+GPIO.setup(az_ms2_pin, GPIO.OUT)
+GPIO.setup(az_ms1_pin, GPIO.OUT)
+GPIO.setup(az_enable_pin, GPIO.OUT)
+
+# MS1 MS2 MS3 Microstep Resolution Excitation Mode
+# L   L   L   Full Step            2 Phase
+# H   L   L   Half Step            1-2 Phase
+# L   H   L   Quarter Step         W1-2 Phase
+# H   H   L   Eighth Step          2W1-2 Phase
+# H   H   H   Sixteenth Step       4W1-2 Phase
+
+GPIO.output(elev_ms3_pin, GPIO.LOW)
+GPIO.output(elev_ms2_pin, GPIO.HIGH)
+GPIO.output(elev_ms1_pin, GPIO.HIGH)
+GPIO.output(elev_enable_pin, GPIO.LOW) # Active low to enable motor outputs
+
+GPIO.output(az_ms3_pin, GPIO.LOW)
+GPIO.output(az_ms2_pin, GPIO.HIGH)
+GPIO.output(az_ms1_pin, GPIO.HIGH)
+GPIO.output(az_enable_pin, GPIO.LOW) # Active low to enable motor outputs
 
 x = open("tleData.txt")
 data = x.read().splitlines()
@@ -177,18 +217,18 @@ class stepperMotors():
 
     # defines how to drive the elevation stepper
     def singleStep_Elev(self, direction):
-        GPIO.output(DIR_Elev_Pin, direction)
-        GPIO.output(STEP_Elev_Pin, GPIO.HIGH)
+        GPIO.output(elev_dir_pin, direction)
+        GPIO.output(elev_step_pin, GPIO.HIGH)
         sleep(self.stepDelay)
-        GPIO.output(STEP_Elev_Pin, GPIO.LOW)
+        GPIO.output(elev_step_pin, GPIO.LOW)
         sleep(self.stepDelay)
 
     #defines how to drive the azimuth stepper
     def singleStep_Az(self, direction):
-        GPIO.output(DIR_Az_Pin, direction)
-        GPIO.output(STEP_Az_Pin, GPIO.HIGH)
+        GPIO.output(az_dir_pin, direction)
+        GPIO.output(az_step_pin, GPIO.HIGH)
         sleep(self.stepDelay)
-        GPIO.output(STEP_Az_Pin, GPIO.LOW)
+        GPIO.output(az_step_pin, GPIO.LOW)
         sleep(self.stepDelay)
 
     def selectSatellite(self, newSatellite):
@@ -200,5 +240,5 @@ class stepperMotors():
     def endThread(self):
         self.stopThread = True
 
-    def cleanupGPIO():
+    def cleanupGPIO(self):
         GPIO.cleanup()

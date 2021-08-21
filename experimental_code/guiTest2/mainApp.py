@@ -5,7 +5,6 @@ from datetime import datetime, timezone
 from math import *
 from functools import partial
 from threading import Thread
-import satelliteCalculations
 from satelliteCalculations import *
 
 class mainWindow():
