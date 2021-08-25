@@ -5,6 +5,7 @@ import datetime as dt
 from datetime import datetime, timezone
 from math import *
 import re
+import sys
 
 # calculated constants to convert to and from radians
 toDeg = 180 / pi
@@ -171,6 +172,7 @@ class motorInterface():
             else:
                 azHomed = True
                 print("finished homing azimuth")
+        sys.exit()
 
     # defines how to drive the elevation stepper
     def singleStep_Elev(self, direction):
