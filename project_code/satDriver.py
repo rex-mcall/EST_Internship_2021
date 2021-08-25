@@ -150,22 +150,26 @@ class motorInterface():
 
         while azHomed == False or elevHomed == False:
             print("in homing loop")
-            if azStartedHome and not GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
-                self.singleStep_Az(0)
+#            if azStartedHome and not GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
+#                self.singleStep_Az(0)
+#            else:
+#                azStartedHome = False
+#                if GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
+#                    self.singleStep_Az(1)
+#                else:
+#                    azHomed = True
+#            if elevStartedHome and not GPIO.input(elev_limit_pin):
+#                singleStep_Elev(0)
+#            else:
+#                elevStartedHome = False
+#                if GPIO.input(elev_limit_pin): # OPS is not interrupted and allows current flow
+#                    self.singleStep_Elev(1)
+#                else:
+#                    elevHomed = True
+            if GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
+                self.singleStep_Az(1)
             else:
-                azStartedHome = False
-                if GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
-                    self.singleStep_Az(1)
-                else:
-                    azHomed = True
-            if azStartedHome and not GPIO.input(az_limit_pin):
-                singleStep_Elev(0)
-            else:
-                elevStartedHome = False
-                if GPIO.input(elev_limit_pin): # OPS is not interrupted and allows current flow
-                    self.singleStep_Elev(1)
-                else:
-                    elevHomed = True
+                azHomed = True
 
     # defines how to drive the elevation stepper
     def singleStep_Elev(self, direction):
