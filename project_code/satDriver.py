@@ -217,7 +217,7 @@ class motorInterface():
         self.keepTracking = trackBool
 
     def setShouldHome(self, homeBool):
-        self.keepHoming = True
+        self.keepHoming = homeBool
 
     def shouldTrack(self):
         if self.keepTracking and self.calibratedMotors and self.satellite != None and self.observer != None:
