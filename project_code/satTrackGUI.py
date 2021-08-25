@@ -133,16 +133,14 @@ class mainWindow():
         try:
             temp = self.motorThread
         except AttributeError:
-            self.motorThread = Thread(target=self.runMotors)
+            self.motorThread = Thread(target=self.motors.singleStepAltAz())
             self.motorThread.daemon = True
             self.motorThread.start()
 
-    def runMotors(self):
-        self.motors.singleStepAltAz()
-
     def homeMotors(self):
+        self.motors.setShouldHome(True)
         try:
-            self.homingThread.start()
+            temp = self.homingThread
         except AttributeError:
             self.homingThread = Thread(target=self.motors.homeMotors())
             self.homingThread.daemon = True
