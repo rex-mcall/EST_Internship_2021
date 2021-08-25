@@ -138,19 +138,11 @@ class motorInterface():
                             self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
 
     def homeMotors(self):
-        startedHomeFlag = False
-        azStartedHome = False
-        elevStartedHome = False
         while not self.stopHomingThread:
 
             while self.keepHoming:
                 self.setShouldTrack(False) # stop trying to track a satellite while homing motors
-#                if startedHomeFlag == False:
-#                    if GPIO.input(az_limit_pin):
-#                        azStartedHome = True
-#            #        if GPIO.input(elev_limit_pin):
-#            #            elevStartedHome = True
-#                    startedHomeFlag = True
+
                 azHomed = False
                 elevHomed = True
 
@@ -172,11 +164,9 @@ class motorInterface():
 #                        else:
 #                            elevHomed = True
                 else:
+                    break
                     self.setShouldHome(False)
                     self.calibratedMotors = True
-                    startedHomeFlag = False
-                    azStartedHome = False
-                    elevStartedHome = False
 
     # defines how to drive the elevation stepper
     def singleStep_Elev(self, direction):
