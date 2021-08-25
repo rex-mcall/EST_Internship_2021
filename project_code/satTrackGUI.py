@@ -5,11 +5,35 @@ from datetime import datetime, timezone
 from math import *
 from functools import partial
 from threading import Thread
-import satelliteCalculations
-from satelliteCalculations import *
+
+from satSearch import *
+from satDriver import *
+
+
 
 class mainWindow():
     def __init__(self):
+
+        # Master variable set --------------------------------------------------
+
+        # calculated constants to convert to and from radians
+        self.toDeg = 180 / pi
+        self.toRad = pi / 180
+
+        # annapolis, md lat/long
+        self.latitude = 38.9784
+        self.longitude = -76.4922
+
+        # sets up reveiver locaiton
+        self.observer = ephem.Observer()
+        #convert to Angle type by multiplying ephem.degree
+        self.observer.lat = latitude * ephem.degree
+        self.observer.lon = longitude * ephem.degree
+        self.observer.elev = 13
+        self.observer.date = datetime.now(timezone.utc)
+
+
+        # Initializing main window ---------------------------------------------
         self.master_window = Tk()
         self.master_window.title("Satellite Tracker")
         self.master_window.attributes("-fullscreen", True)
@@ -19,8 +43,8 @@ class mainWindow():
         self.buttons_frame = Frame(self.master_window)
         self.buttons_frame.pack(fill='y')
 
-        self.btn_Disable = Button(self.buttons_frame, text='Disable Motors', command=self.stopMotors)
-        self.btn_Disable.grid(row=0, column=0, padx=(10), pady=10)
+        self.btn_alternateMotorState = Button(self.buttons_frame, text='Enable Motors', command=self.alternateMotorState)
+        self.btn_alternateMotorState.grid(row=0, column=0, padx=(10), pady=10)
 
         self.btn_Calibrate = Button(self.buttons_frame, text='Calibrate Sensors')
         self.btn_Calibrate.grid(row=0, column=1, padx=(10), pady=10)
@@ -82,11 +106,11 @@ class mainWindow():
         minElev = int(self.minElev_Entry.get()) if self.minElev_Entry.get() != '' else None
         maxWait = dt.timedelta(minutes=int(self.maxWait_Entry.get())) if self.maxWait_Entry.get() != '' else None
 
-        search = satelliteSearch(satNameSearch = satName, minElevSearch = minElev, maxWaitSearch = maxWait)
-        top5Results = search.getTop5Results()
-        self.searchResultButtonPopulation(top5Results)
+        search = satelliteSearch(observer = self.observer, satNameSearch = satName, minElevSearch = minElev, maxWaitSearch = maxWait)
+        topResults = search.getTopResults()
+        self.searchResultButtonPopulation(topResults)
 
-    def searchResultButtonPopulation(self, top5Results):
+    def searchResultButtonPopulation(self, topResults):
         try:
             temp = self.results_Frame
         except AttributeError:
@@ -96,7 +120,7 @@ class mainWindow():
         for widget in self.results_Frame.winfo_children():
             widget.destroy()
         rowCounter = 0
-        for satResult in top5Results:
+        for satResult in topResults:
             btn = Button(self.results_Frame, text=satResult.name, command= partial(self.resultClick, satResult))
             btn.grid(row=rowCounter, column=0)
             rowCounter = rowCounter + 1
@@ -106,7 +130,7 @@ class mainWindow():
             self.motors.selectSatellite(sat)
             self.motors.setShouldTrack(True)
         except AttributeError:
-            self.motors = stepperMotors(satellite=sat)
+            self.motors = stepperMotors(observer = self.oberver, satellite=sat)
         try:
             temp = self.motorThread
         except AttributeError:
@@ -116,8 +140,13 @@ class mainWindow():
 
     def runMotors(self):
         self.motors.singleStepAltAz()
-    def stopMotors(self):
-        self.motors.setShouldTrack(False)
+
+    def alternateMotorState(self):
+        if self.motors.enableState:
+            self.btn_alternateMotorState['text'] = "Enable Motors"
+        else:
+            self.btn_alternateMotorState['text'] = "Disable Motors"
+        self.motors.setEnableState(not self.motors.enableState)
 
     def updateAppInfoFrame(self):
         try:

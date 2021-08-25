@@ -85,11 +85,10 @@ for line in data:
     currIndex = currIndex + 1
 
 class satelliteSearch():
-    def __init__(self, satNameSearch = None, minElevSearch = None, maxWaitSearch = None, minMagSearch = None):
+    def __init__(self, satNameSearch = None, minElevSearch = None, maxWaitSearch = None):
         self.satName_Search = satNameSearch
         self.minElev_Search = minElevSearch
         self.maxWait_Search = maxWaitSearch
-        self.minMag_Search = minMagSearch
     def getTop5Results(self):
         topResults = []
         for tleLines in satTLEs:
@@ -99,7 +98,6 @@ class satelliteSearch():
             matchName = False
             matchElev = False
             matchWait = False
-            matchMag  = False
 
             if self.satName_Search == None:
                 matchName = True
@@ -108,7 +106,7 @@ class satelliteSearch():
             else:
                 continue
 
-            if self.minElev_Search != None or self.maxWait_Search != None or self.minMag_Search != None:
+            if self.minElev_Search != None or self.maxWait_Search != None:
                 satellite = ephem.readtle(tleLines[0], tleLines[1], tleLines[2])
                 satellite.compute(observer)
                 try:
@@ -135,14 +133,7 @@ class satelliteSearch():
             else:
                 continue
 
-            if self.minMag_Search == None:
-                matchMag = True
-            elif self.minMag_Search >= satellite.mag:
-                matchMag = True
-            else:
-                continue
-
-            if matchName and matchElev and matchWait and matchMag:
+            if matchName and matchElev and matchWait:
                 try:
                     topResults.append(satellite)
                 except Exception:
