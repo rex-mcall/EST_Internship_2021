@@ -89,7 +89,7 @@ class motorInterface():
         self.elevDegPerStep = 0.9 / 8 # 1:2 ratio
 
         # amount of time the step pulse is high and low
-        self.stepDelay = 0.00001
+        self.stepDelay = 0.0001
 
         self.keepTracking = False #inner loop of tracking thread
         self.keepHoming = False #inner loop of homing thread
