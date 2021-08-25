@@ -150,6 +150,7 @@ class motorInterface():
                         azStartedHome = True
             #        if GPIO.input(elev_limit_pin):
             #            elevStartedHome = True
+                    startedHomeFlag = True
                 azHomed = False
                 elevHomed = True
 
@@ -173,6 +174,7 @@ class motorInterface():
                 else:
                     self.keepHoming = False
                     self.calibratedMotors = True
+                    startedHomeFlag = False
                     azStartedHome = False
                     elevStartedHome = False
 
