@@ -93,14 +93,42 @@ class motorInterface():
 
         self.keepTracking = False #inner loop of tracking thread
         self.keepHoming = False #inner loop of homing thread
-        self.stopAltAzThread = False #exits the tracking thread when True
+        self.stopMotorsThread = False #exits the tracking thread when True
         self.stopHomingThread = False #exits the homing thread when True
         self.calibratedMotors = True #keeps track of whether the current recorded position of the motors is accurate
         self.enableState = False #keeps track of whether the motors are currently enabled
 
-    def singleStepAltAz(self):
-        while not self.stopAltAzThread:
-            while self.shouldTrack():
+    def driveMotors(self):
+        self.azHomed = False
+        self.elevHomed = True
+        while not self.stopMotorsThread:
+            if self.keepHoming:
+                self.setShouldTrack(False) # stop trying to track a satellite while homing motors
+
+
+
+                if self.azHomed == False: # or self.elevHomed == False:
+#                    if azStartedHome and GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
+#                        self.singleStep_Az(0)
+#                    else:
+                    azStartedHome = False
+                    if not GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
+                        self.singleStep_Az(1)
+                    else:
+                        self.azHomed = True
+#                    if elevStartedHome and not GPIO.input(elev_limit_pin):
+#                        singleStep_Elev(0)
+#                    else:
+#                        elevStartedHome = False
+#                        if GPIO.input(elev_limit_pin): # OPS is not interrupted and allows current flow
+#                            self.singleStep_Elev(1)
+#                        else:
+#                            self.elevHomed = True
+                else:
+                    self.setShouldHome(False)
+                    self.calibratedMotors = True
+
+            elif self.shouldTrack():
                     # refreshes the satellite position with the current time
                     self.observer.date = datetime.now(timezone.utc)
                     self.satellite.compute(self.observer)
@@ -138,35 +166,10 @@ class motorInterface():
                             self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
 
     def homeMotors(self):
-        self.azHomed = False
-        self.elevHomed = True
+
         while not self.stopHomingThread:
 
-            while self.keepHoming:
-                self.setShouldTrack(False) # stop trying to track a satellite while homing motors
 
-
-
-                if self.azHomed == False: # or self.elevHomed == False:
-#                    if azStartedHome and GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
-#                        self.singleStep_Az(0)
-#                    else:
-                    azStartedHome = False
-                    if not GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
-                        self.singleStep_Az(1)
-                    else:
-                        self.azHomed = True
-#                    if elevStartedHome and not GPIO.input(elev_limit_pin):
-#                        singleStep_Elev(0)
-#                    else:
-#                        elevStartedHome = False
-#                        if GPIO.input(elev_limit_pin): # OPS is not interrupted and allows current flow
-#                            self.singleStep_Elev(1)
-#                        else:
-#                            self.elevHomed = True
-                else:
-                    self.setShouldHome(False)
-                    self.calibratedMotors = True
 
     # defines how to drive the elevation stepper
     def singleStep_Elev(self, direction):
@@ -219,7 +222,7 @@ class motorInterface():
             return False
 
     def endThread(self):
-        self.stopAltAzThread = True
+        self.stopMotorsThread = True
         self.stopHomingThread = True
         sleep(1)
         self.cleanupGPIO()
