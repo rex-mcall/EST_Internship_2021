@@ -145,24 +145,24 @@ class motorInterface():
 
             while self.keepHoming:
                 self.setShouldTrack(False) # stop trying to track a satellite while homing motors
-                if startedHomeFlag == False:
-                    if GPIO.input(az_limit_pin):
-                        azStartedHome = True
-            #        if GPIO.input(elev_limit_pin):
-            #            elevStartedHome = True
-                    startedHomeFlag = True
+#                if startedHomeFlag == False:
+#                    if GPIO.input(az_limit_pin):
+#                        azStartedHome = True
+#            #        if GPIO.input(elev_limit_pin):
+#            #            elevStartedHome = True
+#                    startedHomeFlag = True
                 azHomed = False
                 elevHomed = True
 
                 if azHomed == False or elevHomed == False:
-                    if azStartedHome and GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
-                        self.singleStep_Az(0)
+#                    if azStartedHome and GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
+#                        self.singleStep_Az(0)
+#                    else:
+                    azStartedHome = False
+                    if not GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
+                        self.singleStep_Az(1)
                     else:
-                        azStartedHome = False
-                        if not GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
-                            self.singleStep_Az(1)
-                        else:
-                            azHomed = True
+                        azHomed = True
 #                    if elevStartedHome and not GPIO.input(elev_limit_pin):
 #                        singleStep_Elev(0)
 #                    else:
