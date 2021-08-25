@@ -138,10 +138,11 @@ class motorInterface():
                             self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
 
     def homeMotors(self):
+        startedHomeFlag = False
+        azStartedHome = False
+        elevStartedHome = False
         while not self.stopHomingThread:
-            startedHomeFlag = False
-            azStartedHome = False
-            elevStartedHome = False
+
             while self.keepHoming:
                 self.setShouldTrack(False) # stop trying to track a satellite while homing motors
                 if startedHomeFlag == False:
