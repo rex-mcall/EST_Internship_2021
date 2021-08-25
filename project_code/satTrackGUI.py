@@ -32,6 +32,8 @@ class mainWindow():
         self.observer.elev = 13
         self.observer.date = datetime.now(timezone.utc)
 
+        self.motors = stepperMotors(observer = self.observer)
+
 
         # Initializing main window ---------------------------------------------
         self.master_window = Tk()
@@ -126,11 +128,8 @@ class mainWindow():
             rowCounter = rowCounter + 1
 
     def resultClick(self, sat):
-        try:
-            self.motors.selectSatellite(sat)
-            self.motors.setShouldTrack(True)
-        except AttributeError:
-            self.motors = stepperMotors(observer = self.observer, satellite=sat)
+        self.motors.selectSatellite(sat)
+        self.motors.setShouldTrack(True)
         try:
             temp = self.motorThread
         except AttributeError:

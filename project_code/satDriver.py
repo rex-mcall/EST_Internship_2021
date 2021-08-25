@@ -32,7 +32,7 @@ az_limit_pin = 10
 
 
 
-class stepperMotors():
+class motorInterface():
     def __init__(self, observer = None, satellite=None):
         self.satellite = satellite
         self.observer = observer
