@@ -32,7 +32,7 @@ class mainWindow():
         self.observer.elev = 13
         self.observer.date = datetime.now(timezone.utc)
 
-        self.motors = stepperMotors(observer = self.observer)
+        self.motors = motorInterface(observer = self.observer)
 
 
         # Initializing main window ---------------------------------------------
