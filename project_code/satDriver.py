@@ -148,7 +148,7 @@ class motorInterface():
         azHomed = False
         elevHomed = True
 
-        while not azHomed and not elevHomed:
+        while azHomed != True and elevHomed != True:
             print("in homing loop")
             if azStartedHome and not GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
                 self.singleStep_Az(0)
