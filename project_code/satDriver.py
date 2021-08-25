@@ -165,7 +165,6 @@ class motorInterface():
 #                        else:
 #                            self.elevHomed = True
                 else:
-                    break
                     self.setShouldHome(False)
                     self.calibratedMotors = True
 
