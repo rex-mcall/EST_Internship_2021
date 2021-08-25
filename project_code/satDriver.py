@@ -101,7 +101,6 @@ class motorInterface():
     def singleStepAltAz(self):
         while not self.stopAltAzThread:
             while self.shouldTrack():
-                    self.shouldHomeMotors = False
                     # refreshes the satellite position with the current time
                     self.observer.date = datetime.now(timezone.utc)
                     self.satellite.compute(self.observer)
@@ -140,15 +139,16 @@ class motorInterface():
 
     def homeMotors(self):
         while not self.stopHomingThread:
+            startedHomeFlag = False
+            azStartedHome = False
+            elevStartedHome = False
             while self.keepHoming:
                 self.setShouldTrack(False) # stop trying to track a satellite while homing motors
-
-                azStartedHome = False
-                elevStartedHome = False
-                if GPIO.input(az_limit_pin):
-                    azStartedHome = True
-        #        if GPIO.input(elev_limit_pin):
-        #            elevStartedHome = True
+                if startedHomeFlag == False:
+                    if GPIO.input(az_limit_pin):
+                        azStartedHome = True
+            #        if GPIO.input(elev_limit_pin):
+            #            elevStartedHome = True
                 azHomed = False
                 elevHomed = True
 
@@ -172,6 +172,8 @@ class motorInterface():
                 else:
                     self.keepHoming = False
                     self.calibratedMotors = True
+                    azStartedHome = False
+                    elevStartedHome = False
 
     # defines how to drive the elevation stepper
     def singleStep_Elev(self, direction):
