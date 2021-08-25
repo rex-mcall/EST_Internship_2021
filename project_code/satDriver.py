@@ -203,7 +203,7 @@ class stepperMotors():
         self.keepTracking = trackBool
 
     def shouldTrack(self):
-        if keepTracking and calibratedMotors and self.satellite != None and self.observer != None:
+        if self.keepTracking and self.calibratedMotors and self.satellite != None and self.observer != None:
             return True
         else:
             return False
