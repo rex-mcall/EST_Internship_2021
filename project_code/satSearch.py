@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from math import *
 import re
 
-
+toDeg = 180 / pi
+toRad = pi / 180
 
 x = open("tleData.txt")
 data = x.read().splitlines()

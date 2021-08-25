@@ -27,8 +27,8 @@ class mainWindow():
         # sets up reveiver locaiton
         self.observer = ephem.Observer()
         #convert to Angle type by multiplying ephem.degree
-        self.observer.lat = latitude * ephem.degree
-        self.observer.lon = longitude * ephem.degree
+        self.observer.lat = self.latitude * ephem.degree
+        self.observer.lon = self.longitude * ephem.degree
         self.observer.elev = 13
         self.observer.date = datetime.now(timezone.utc)
 
@@ -130,7 +130,7 @@ class mainWindow():
             self.motors.selectSatellite(sat)
             self.motors.setShouldTrack(True)
         except AttributeError:
-            self.motors = stepperMotors(observer = self.oberver, satellite=sat)
+            self.motors = stepperMotors(observer = self.observer, satellite=sat)
         try:
             temp = self.motorThread
         except AttributeError:
