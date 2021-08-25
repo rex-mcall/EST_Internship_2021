@@ -172,7 +172,7 @@ class motorInterface():
 #                        else:
 #                            elevHomed = True
                 else:
-                    self.keepHoming = False
+                    self.setShouldHome(False)
                     self.calibratedMotors = True
                     startedHomeFlag = False
                     azStartedHome = False
