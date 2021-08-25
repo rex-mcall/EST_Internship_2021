@@ -166,7 +166,7 @@ class motorInterface():
 #                    self.singleStep_Elev(1)
 #                else:
 #                    elevHomed = True
-            if GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
+            if not GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
                 self.singleStep_Az(1)
             else:
                 azHomed = True
