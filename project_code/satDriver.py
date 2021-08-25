@@ -172,7 +172,6 @@ class motorInterface():
             else:
                 azHomed = True
                 print("finished homing azimuth")
-        sys.exit()
 
     # defines how to drive the elevation stepper
     def singleStep_Elev(self, direction):

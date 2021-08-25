@@ -142,7 +142,7 @@ class mainWindow():
 
     def homeMotors(self):
         try:
-            temp = self.homingThread
+            self.homingThread.start()
         except AttributeError:
             self.homingThread = Thread(target=self.motors.homeMotors())
             self.homingThread.daemon = True
