@@ -165,10 +165,6 @@ class motorInterface():
                             self.singleStep_Az(0)
                             self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
 
-    def homeMotors(self):
-
-        while not self.stopHomingThread:
-
 
 
     # defines how to drive the elevation stepper
