@@ -142,10 +142,10 @@ class motorInterface():
         elevStartedHome = False
         if GPIO.input(az_limit_pin):
             azStartedHome = True
-        if GPIO.input(elev_limit_pin):
-            elevStartedHome = True
+#        if GPIO.input(elev_limit_pin):
+#            elevStartedHome = True
         azHomed = False
-        elevHomed = False
+        elevHomed = True
 
         while not azHomed and not elevHomed:
             if azStartedHome and not GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
@@ -210,6 +210,7 @@ class motorInterface():
 
     def endThread(self):
         self.stopThread = True
+        sleep(0.1)
         self.cleanupGPIO()
 
     def cleanupGPIO(self):

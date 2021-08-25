@@ -51,7 +51,7 @@ class mainWindow():
         self.btn_Calibrate = Button(self.buttons_frame, text='Calibrate Sensors')
         self.btn_Calibrate.grid(row=0, column=1, padx=(10), pady=10)
 
-        self.btn_Home = Button(self.buttons_frame, text='Home Motors')
+        self.btn_Home = Button(self.buttons_frame, text='Home Motors', command=self.homeMotors)
         self.btn_Home.grid(row=0, column=2, padx=(10), pady=10)
 
         self.btn_Laser = Button(self.buttons_frame, text='Laser On/Off')
@@ -139,6 +139,9 @@ class mainWindow():
 
     def runMotors(self):
         self.motors.singleStepAltAz()
+
+    def homeMotors(self):
+        self.motors.homeMotors()
 
     def alternateMotorState(self):
         if self.motors.enableState:
