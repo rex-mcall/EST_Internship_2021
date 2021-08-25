@@ -166,7 +166,7 @@ class mainWindow():
             self.motors.endThread()
         except Exception:
             pass
-        sleep(5)
+        sleep(0.5)
         exit(0)
 
 

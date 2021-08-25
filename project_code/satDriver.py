@@ -210,6 +210,7 @@ class motorInterface():
 
     def endThread(self):
         self.stopThread = True
+        self.cleanupGPIO()
 
     def cleanupGPIO(self):
         GPIO.cleanup()
