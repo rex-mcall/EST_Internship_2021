@@ -141,7 +141,12 @@ class mainWindow():
         self.motors.singleStepAltAz()
 
     def homeMotors(self):
-        self.motors.homeMotors()
+        try:
+            temp = self.homingThread
+        except AttributeError:
+            self.homingThread = Thread(target=self.motors.homeMotors())
+            self.homingThread.daemon = True
+            self.homingThread.start()
 
     def alternateMotorState(self):
         if self.motors.enableState:
