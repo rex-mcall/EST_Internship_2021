@@ -142,6 +142,12 @@ class mainWindow():
 
     def homeMotorsCommand(self):
         self.motors.setShouldHome(True)
+        try:
+            temp = self.motorThread
+        except AttributeError:
+            self.motorThread = Thread(target=self.runAltAz)
+            self.motorThread.daemon = True
+            self.motorThread.start()
 
     def alternateMotorState(self):
         if self.motors.enableState:
