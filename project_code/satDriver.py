@@ -92,7 +92,7 @@ class motorInterface():
 
         self.keepTracking = False
         self.stopThread = False
-        self.calibratedMotors = False
+        self.calibratedMotors = True
         self.enableState = False
 
     def singleStepAltAz(self):
