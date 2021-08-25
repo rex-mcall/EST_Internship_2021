@@ -138,8 +138,8 @@ class motorInterface():
                             self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
 
     def homeMotors(self):
-        azHomed = False
-        elevHomed = True
+        self.azHomed = False
+        self.elevHomed = True
         while not self.stopHomingThread:
 
             while self.keepHoming:
@@ -147,7 +147,7 @@ class motorInterface():
 
 
 
-                if azHomed == False or elevHomed == False:
+                if azHomed == False: # or elevHomed == False:
 #                    if azStartedHome and GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
 #                        self.singleStep_Az(0)
 #                    else:
@@ -209,6 +209,9 @@ class motorInterface():
 
     def setShouldHome(self, homeBool):
         self.keepHoming = homeBool
+        if homeBool:
+            self.azHomed = False
+            self.elevHomed = False
 
     def shouldTrack(self):
         if self.keepTracking and self.calibratedMotors and self.satellite != None and self.observer != None:
