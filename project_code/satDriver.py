@@ -116,6 +116,8 @@ class motorInterface():
                         self.singleStep_Az(1)
                     else:
                         self.azHomed = True
+                        self.currStepperAzimuth = 0
+                        self.currStepperElevation = 0
 #                    if elevStartedHome and not GPIO.input(elev_limit_pin):
 #                        singleStep_Elev(0)
 #                    else:
