@@ -153,11 +153,11 @@ class motorInterface():
                 elevHomed = True
 
                 if azHomed == False or elevHomed == False:
-                    if azStartedHome and not GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
+                    if azStartedHome and GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
                         self.singleStep_Az(0)
                     else:
                         azStartedHome = False
-                        if GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
+                        if not GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
                             self.singleStep_Az(1)
                         else:
                             azHomed = True
