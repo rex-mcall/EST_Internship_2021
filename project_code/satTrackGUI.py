@@ -51,7 +51,7 @@ class mainWindow():
         self.btn_Calibrate = Button(self.buttons_frame, text='Calibrate Sensors')
         self.btn_Calibrate.grid(row=0, column=1, padx=(10), pady=10)
 
-        self.btn_Home = Button(self.buttons_frame, text='Home Motors', command=self.homeMotors)
+        self.btn_Home = Button(self.buttons_frame, text='Home Motors', command=self.homeMotorsCommand)
         self.btn_Home.grid(row=0, column=2, padx=(10), pady=10)
 
         self.btn_Laser = Button(self.buttons_frame, text='Laser On/Off')
@@ -133,18 +133,23 @@ class mainWindow():
         try:
             temp = self.motorThread
         except AttributeError:
-            self.motorThread = Thread(target=self.motors.singleStepAltAz())
+            self.motorThread = Thread(target=self.runAltAz)
             self.motorThread.daemon = True
             self.motorThread.start()
 
-    def homeMotors(self):
+    def runAltAz(self):
+        self.motors.singleStepAltAz()
+    def homeMotorsCommand(self):
         self.motors.setShouldHome(True)
         try:
             temp = self.homingThread
         except AttributeError:
-            self.homingThread = Thread(target=self.motors.homeMotors())
+            self.homingThread = Thread(target=self.runHomeMotors)
             self.homingThread.daemon = True
             self.homingThread.start()
+
+    def runHomeMotors(self):
+        self.motors.homeMotors()
 
     def alternateMotorState(self):
         if self.motors.enableState:
