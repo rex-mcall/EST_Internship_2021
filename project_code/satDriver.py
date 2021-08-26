@@ -99,7 +99,7 @@ class motorInterface():
                 self.setShouldTrack(False) # stop trying to track a satellite while homing motors
 
                 if not self.azHomed or not self.elevHomed or not self.azHomedRotate or not self.elevHomedRotate:
-                    if not GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
+                    if not GPIO.input(az_limit_pin) and not self.azHomed: # OPS is not interrupted and allows current flow
                         self.singleStep_Az(0)
                     elif not azHomedFlag:
                         azHomedFlag = True
@@ -112,7 +112,7 @@ class motorInterface():
                         self.azHomedRotate = True
 
 
-                    if not GPIO.input(elev_limit_pin): # OPS is not interrupted and allows current flow
+                    if not GPIO.input(elev_limit_pin) and not self.elevHomed: # OPS is not interrupted and allows current flow
                         self.singleStep_Elev(0)
                     elif not elevHomedFlag:
                         elevHomedFlag = True
