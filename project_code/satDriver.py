@@ -228,9 +228,9 @@ class motorInterface():
             GPIO.output(az_ms1_pin, GPIO.LOW)
 
         elif stepMode == 8:
-            GPIO.output(az_ms3_pin, GPIO.HIGH)
+            GPIO.output(az_ms3_pin, GPIO.LOW)
             GPIO.output(az_ms2_pin, GPIO.HIGH)
-            GPIO.output(az_ms1_pin, GPIO.LOW)
+            GPIO.output(az_ms1_pin, GPIO.HIGH)
 
         elif stepMode == 16:
             GPIO.output(az_ms3_pin, GPIO.HIGH)
