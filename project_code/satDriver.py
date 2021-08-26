@@ -103,7 +103,7 @@ class motorInterface():
                         self.azHomed = True
                         self.currStepperAzimuth = 0
                     if self.azHomed and not self.azHomedRotate and self.currStepperAzimuth < 180:
-                        self.setMicrostepMode(16)
+                        self.setMicrostepMode_Az(16)
                         self.singleStep_Az(0)
                     else: 
                         self.azHomedRotate = True
@@ -115,7 +115,7 @@ class motorInterface():
                         self.elevHomed = True
                         self.currStepperElevation = 0
                     if self.elevHomed and not self.elevHomedRotate and self.currStepperElevation < 90:
-                        self.setMicrostepMode(4)
+                        self.setMicrostepMode_Elev(4)
                         self.singleStep_Az(0)
                     else: 
                         self.elevHomedRotate = True
