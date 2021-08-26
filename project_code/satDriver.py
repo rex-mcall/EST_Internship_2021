@@ -80,7 +80,7 @@ class motorInterface():
 
 
         # amount of time the step pulse is high and low
-        self.stepDelay_Az = 0.001
+        self.stepDelay_Az = 0.0001
         self.stepDelay_Elev = 0.001
 
         self.keepTracking = False #inner loop of tracking thread
@@ -111,15 +111,15 @@ class motorInterface():
                         self.elevHomed = True
                         self.currStepperElevation = 0
                 else:
-                    if self.currStepperAzimuth < 180 or self.currStepperElevation < 90:
-                        if self.currStepperAzimuth < 180:
-                            self.singleStep_Az(1)
-
-                        if self.currStepperElevation < 90:
-                            self.singleStep_Elev(0)
-                    else:
-                        self.setShouldHome(False)
-                        self.calibratedMotors = True
+#                    if self.currStepperAzimuth < 180 or self.currStepperElevation < 90:
+#                        if self.currStepperAzimuth < 180:
+#                            self.singleStep_Az(1)
+#
+#                        if self.currStepperElevation < 90:
+#                            self.singleStep_Elev(0)
+#                    else:
+                    self.setShouldHome(False)
+                    self.calibratedMotors = True
 
             elif self.shouldTrack():
                     if self.stepMode_Az != 8:
