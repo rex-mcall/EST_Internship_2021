@@ -63,8 +63,8 @@ class motorInterface():
 
 
         # geared down ratios for degrees per step
-        self.azDegPerStep = 0.36      # 1:5 ratio
-        self.elevDegPerStep = 0.9     # 1:2 ratio
+        self.azDegPerStep = 0      # 1:5 ratio
+        self.elevDegPerStep = 0     # 1:2 ratio
 
         self.stepMode_Elev = 8
         self.stepMode_Az = 8
@@ -114,10 +114,9 @@ class motorInterface():
                     if self.currStepperAzimuth < 180 or self.currStepperElevation < 90:
                         if self.currStepperAzimuth < 180:
                             self.singleStep_Az(1)
-                            sleep(0.01)
+
                         if self.currStepperElevation < 90:
                             self.singleStep_Elev(0)
-                            sleep(0.01)
                     else:
                         self.setShouldHome(False)
                         self.calibratedMotors = True
