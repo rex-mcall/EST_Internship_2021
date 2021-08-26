@@ -31,3 +31,9 @@ tkinter
 - pip install tk
 
 ---
+
+pynmea2
+- Parses NMEA 0183 protocol data from the GPS module
+- pip install pynmea2
+
+---
