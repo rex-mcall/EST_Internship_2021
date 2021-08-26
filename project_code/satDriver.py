@@ -80,7 +80,7 @@ class motorInterface():
 
 
         # amount of time the step pulse is high and low
-        self.stepDelay_Az = 0.0001
+        self.stepDelay_Az = 0.001
         self.stepDelay_Elev = 0.001
 
         self.keepTracking = False #inner loop of tracking thread
