@@ -61,8 +61,8 @@ class motorInterface():
         GPIO.setup(elev_limit_pin, GPIO.IN)
         GPIO.setup(az_limit_pin, GPIO.IN)
 
-        self.stepMode_Elev = 1 #start in fullstep mode
-        self.stepMode_Az = 1 #start in fullstep mode
+        self.stepMode_Elev = 8
+        self.stepMode_Az = 8
         self.setMicrostepMode_Elev(self.stepMode_Elev)
         self.setMicrostepMode_Az(self.stepMode_Az)
 
