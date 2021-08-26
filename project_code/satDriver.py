@@ -105,7 +105,7 @@ class motorInterface():
                         azHomedFlag = True
                         self.azHomed = True
                         self.currStepperAzimuth = 0
-                    if self.azHomed and not self.azHomedRotate and self.currStepperAzimuth < 180:
+                    if self.azHomed and self.currStepperAzimuth < 180:
                         self.setMicrostepMode_Az(16)
                         self.singleStep_Az(1)
                     else: 
@@ -113,12 +113,12 @@ class motorInterface():
 
 
                     if not GPIO.input(elev_limit_pin) and not self.elevHomed: # OPS is not interrupted and allows current flow
-                        self.singleStep_Elev(0)
+                        self.singleStep_Elev(1)
                     elif not elevHomedFlag:
                         elevHomedFlag = True
                         self.elevHomed = True
                         self.currStepperElevation = 0
-                    if self.elevHomed and not self.elevHomedRotate and self.currStepperElevation < 90:
+                    if self.elevHomed and self.currStepperElevation < 90:
                         self.setMicrostepMode_Elev(4)
                         self.singleStep_Az(0)
                     else: 
