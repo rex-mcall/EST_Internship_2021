@@ -90,44 +90,32 @@ class motorInterface():
     def driveMotors(self):
         self.azHomed = False # initial homing with the sensor
         self.elevHomed = False
-        self.azHomedRotate = False # rotation to correct position
-        self.elevHomedRotate = False
-        azHomedFlag = False
-        elevHomedFlag = False
         while not self.stopMotorsThread:
             if self.keepHoming:
                 self.setShouldTrack(False) # stop trying to track a satellite while homing motors
 
-                if not self.azHomed or not self.elevHomed or not self.azHomedRotate or not self.elevHomedRotate:
+                if not self.azHomed or not self.elevHomed:
                     if not GPIO.input(az_limit_pin) and not self.azHomed: # OPS is not interrupted and allows current flow
                         self.singleStep_Az(0)
-                    elif not azHomedFlag:
-                        azHomedFlag = True
+                    else:
                         self.azHomed = True
                         self.currStepperAzimuth = 0
-                    if self.azHomed and self.currStepperAzimuth < 180:
-                        self.setMicrostepMode_Az(8)
-                        self.singleStep_Az(1)
-                    else: 
-                        self.azHomedRotate = True
 
 
                     if not GPIO.input(elev_limit_pin) and not self.elevHomed: # OPS is not interrupted and allows current flow
                         self.singleStep_Elev(1)
-                    elif not elevHomedFlag:
-                        elevHomedFlag = True
+                    else:
                         self.elevHomed = True
                         self.currStepperElevation = 0
-                    if self.elevHomed and self.currStepperElevation < 90:
-                        self.setMicrostepMode_Elev(16)
-                        self.singleStep_Elev(0)
-                    else: 
-                        self.elevHomedRotate = True
                 else:
-                    azHomedFlag = False
-                    elevHomedFlag = False
-                    self.setShouldHome(False)
-                    self.calibratedMotors = True
+                    if self.currStepperAzimuth < 180 or self.currStepperElevation < 90:
+                        if self.currStepperAzimuth < 180:
+                            self.singleStep_Az(1)
+                        if self.currStepperElevation < 90:
+                            self.singleStep_Elev(0)
+                    else:
+                        self.setShouldHome(False)
+                        self.calibratedMotors = True
 
             elif self.shouldTrack():
                     if self.stepMode_Az != 8:
@@ -297,8 +285,6 @@ class motorInterface():
         if homeBool:
             self.azHomed = False
             self.elevHomed = False
-            self.azHomedRotate = False
-            self.elevHomedRotate = False
 
     def shouldTrack(self):
         if self.keepTracking and self.calibratedMotors and self.satellite != None and self.observer != None:
