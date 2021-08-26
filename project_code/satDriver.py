@@ -120,7 +120,7 @@ class motorInterface():
                         self.currStepperElevation = 0
                     if self.elevHomed and self.currStepperElevation < 90:
                         self.setMicrostepMode_Elev(4)
-                        self.singleStep_Az(0)
+                        self.singleStep_Elev(0)
                     else: 
                         self.elevHomedRotate = True
                 else:
