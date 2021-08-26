@@ -61,23 +61,11 @@ class motorInterface():
         GPIO.setup(elev_limit_pin, GPIO.IN)
         GPIO.setup(az_limit_pin, GPIO.IN)
 
+        self.stepMode_Elev = 1 #start in fullstep mode
+        self.stepMode_Az = 1 #start in fullstep mode
+        self.setMicrostepMode_Elev(self.stepMode_Elev)
+        self.setMicrostepMode_Az(self.stepMode_Az)
 
-        # MS1 MS2 MS3 Microstep Resolution Excitation Mode
-        # L   L   L   Full Step            2 Phase
-        # H   L   L   Half Step            1-2 Phase
-        # L   H   L   Quarter Step         W1-2 Phase
-        # H   H   L   Eighth Step          2W1-2 Phase
-        # H   H   H   Sixteenth Step       4W1-2 Phase
-
-        GPIO.output(elev_ms3_pin, GPIO.LOW)
-        GPIO.output(elev_ms2_pin, GPIO.HIGH)
-        GPIO.output(elev_ms1_pin, GPIO.HIGH)
-        GPIO.output(elev_enable_pin, GPIO.LOW) # Active low to enable motor outputs
-
-        GPIO.output(az_ms3_pin, GPIO.LOW)
-        GPIO.output(az_ms2_pin, GPIO.HIGH)
-        GPIO.output(az_ms1_pin, GPIO.HIGH)
-        GPIO.output(az_enable_pin, GPIO.LOW) # Active low to enable motor outputs
 
 
         # initializes variables to remember the current angle of the azimuth and elevation
@@ -85,8 +73,8 @@ class motorInterface():
         self.currStepperElevation = 0
 
         # geared down ratios for degrees per step
-        self.azDegPerStep = 0.36 / 8  # 1:5 ratio
-        self.elevDegPerStep = 0.9 / 8 # 1:2 ratio
+        self.azDegPerStep = 0.36      # 1:5 ratio
+        self.elevDegPerStep = 0.9     # 1:2 ratio
 
         # amount of time the step pulse is high and low
         self.stepDelay = 0.0001
@@ -99,38 +87,47 @@ class motorInterface():
         self.enableState = False #keeps track of whether the motors are currently enabled
 
     def driveMotors(self):
-        self.azHomed = False
-        self.elevHomed = True
+        self.azHomed = False # initial homing with the sensor
+        self.elevHomed = False
+        self.azHomedRotate = False # rotation to correct position
+        self.elevHomedRotate = False
         while not self.stopMotorsThread:
             if self.keepHoming:
                 self.setShouldTrack(False) # stop trying to track a satellite while homing motors
 
-
-
-                if self.azHomed == False: # or self.elevHomed == False:
-#                    if azStartedHome and GPIO.input(az_limit_pin): # if it began by blocking the sensor and hasn't cleared it yet
-#                        self.singleStep_Az(0)
-#                    else:
-                    azStartedHome = False
+                if not self.azHomed or not self.elevHomed or not self.azHomedRotate or not self.elevHomedRotate:
                     if not GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
                         self.singleStep_Az(1)
                     else:
                         self.azHomed = True
                         self.currStepperAzimuth = 0
+                    if self.azHomed and not self.azHomedRotate and self.currStepperAzimuth < 180:
+                        self.setMicrostepMode(16)
+                        self.singleStep_Az(0)
+                    else: 
+                        self.azHomedRotate = True
+
+
+                    if not GPIO.input(elev_limit_pin): # OPS is not interrupted and allows current flow
+                        self.singleStep_Elev(0)
+                    else:
+                        self.elevHomed = True
                         self.currStepperElevation = 0
-#                    if elevStartedHome and not GPIO.input(elev_limit_pin):
-#                        singleStep_Elev(0)
-#                    else:
-#                        elevStartedHome = False
-#                        if GPIO.input(elev_limit_pin): # OPS is not interrupted and allows current flow
-#                            self.singleStep_Elev(1)
-#                        else:
-#                            self.elevHomed = True
+                    if self.elevHomed and not self.elevHomedRotate and self.currStepperElevation < 90:
+                        self.setMicrostepMode(4)
+                        self.singleStep_Az(0)
+                    else: 
+                        self.elevHomedRotate = True
                 else:
                     self.setShouldHome(False)
                     self.calibratedMotors = True
 
             elif self.shouldTrack():
+                    if self.stepMode_Az != 8:
+                        self.setMicrostepMode_Az(8)
+                    if self.stepMode_Elev != 8:
+                        self.setMicrostepMode_Elev(8)
+
                     # refreshes the satellite position with the current time
                     self.observer.date = datetime.now(timezone.utc)
                     self.satellite.compute(self.observer)
@@ -144,10 +141,10 @@ class motorInterface():
                         # pulses the elevation stepper motor in the correct direction
                         if elevErrDelta >= (self.elevDegPerStep * 3/2):
                             self.singleStep_Elev(0)
-                            self.currStepperElevation = self.currStepperElevation + self.elevDegPerStep
+
                         elif elevErrDelta <= (-self.elevDegPerStep * 3/2):
                             self.singleStep_Elev(1)
-                            self.currStepperElevation = self.currStepperElevation - self.elevDegPerStep
+
 
                         # determines the most efficient direction to get to the correct azimuth
                         azErrDelta = 0
@@ -162,15 +159,92 @@ class motorInterface():
                         # pulses the azimuth stepper motor in the correct direction
                         if azErrDelta >= (self.azDegPerStep * 3/2):
                             self.singleStep_Az(1)
-                            self.currStepperAzimuth = self.currStepperAzimuth + self.azDegPerStep
+
                         elif azErrDelta <= (-self.azDegPerStep * 3/2) :
                             self.singleStep_Az(0)
-                            self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
 
 
+    # sets the microstep pins according to the input value
+    # accepts the denominator of the step mode (1,2,4,8,16)
+    def setMicrostepMode_Elev(self, stepMode):
+        # MS1 MS2 MS3 Microstep Resolution Excitation Mode
+        # L   L   L   Full Step            2 Phase
+        # H   L   L   Half Step            1-2 Phase
+        # L   H   L   Quarter Step         W1-2 Phase
+        # H   H   L   Eighth Step          2W1-2 Phase
+        # H   H   H   Sixteenth Step       4W1-2 Phase
+
+        self.elevDegPerStep = 0.9  / stepMode  # 1:2 ratio
+        self.stepMode_Elev = stepMode
+        if stepMode == 1:
+            GPIO.output(elev_ms3_pin, GPIO.LOW)
+            GPIO.output(elev_ms2_pin, GPIO.LOW)
+            GPIO.output(elev_ms1_pin, GPIO.LOW)
+
+        elif stepMode == 2:
+            GPIO.output(elev_ms3_pin, GPIO.LOW)
+            GPIO.output(elev_ms2_pin, GPIO.LOW)
+            GPIO.output(elev_ms1_pin, GPIO.HIGH)
+
+        elif stepMode == 4:
+            GPIO.output(elev_ms3_pin, GPIO.LOW)
+            GPIO.output(elev_ms2_pin, GPIO.HIGH)
+            GPIO.output(elev_ms1_pin, GPIO.LOW)
+
+        elif stepMode == 8:
+            GPIO.output(elev_ms3_pin, GPIO.HIGH)
+            GPIO.output(elev_ms2_pin, GPIO.HIGH)
+            GPIO.output(elev_ms1_pin, GPIO.LOW)
+
+        elif stepMode == 16:
+            GPIO.output(elev_ms3_pin, GPIO.HIGH)
+            GPIO.output(elev_ms2_pin, GPIO.HIGH)
+            GPIO.output(elev_ms1_pin, GPIO.HIGH)
+
+    # sets the microstep pins according to the input value
+    # accepts the denominator of the step mode (1,2,4,8,16)
+    def setMicrostepMode_Az(self, stepMode):
+        # MS1 MS2 MS3 Microstep Resolution Excitation Mode
+        # L   L   L   Full Step            2 Phase
+        # H   L   L   Half Step            1-2 Phase
+        # L   H   L   Quarter Step         W1-2 Phase
+        # H   H   L   Eighth Step          2W1-2 Phase
+        # H   H   H   Sixteenth Step       4W1-2 Phase
+
+        self.azDegPerStep   = 0.36 / stepMode  # 1:5 ratio
+        self.stepMode_Az = stepMode
+        if stepMode == 1:
+            GPIO.output(az_ms3_pin, GPIO.LOW)
+            GPIO.output(az_ms2_pin, GPIO.LOW)
+            GPIO.output(az_ms1_pin, GPIO.LOW)
+
+        elif stepMode == 2:
+            GPIO.output(az_ms3_pin, GPIO.LOW)
+            GPIO.output(az_ms2_pin, GPIO.LOW)
+            GPIO.output(az_ms1_pin, GPIO.HIGH)
+
+        elif stepMode == 4:
+            GPIO.output(az_ms3_pin, GPIO.LOW)
+            GPIO.output(az_ms2_pin, GPIO.HIGH)
+            GPIO.output(az_ms1_pin, GPIO.LOW)
+
+        elif stepMode == 8:
+            GPIO.output(az_ms3_pin, GPIO.HIGH)
+            GPIO.output(az_ms2_pin, GPIO.HIGH)
+            GPIO.output(az_ms1_pin, GPIO.LOW)
+
+        elif stepMode == 16:
+            GPIO.output(az_ms3_pin, GPIO.HIGH)
+            GPIO.output(az_ms2_pin, GPIO.HIGH)
+            GPIO.output(az_ms1_pin, GPIO.HIGH)
 
     # defines how to drive the elevation stepper
     def singleStep_Elev(self, direction):
+        if direction == 0:
+            self.currStepperElevation = self.currStepperElevation + self.elevDegPerStep
+        else:
+            self.currStepperElevation = self.currStepperElevation - self.elevDegPerStep
+
         GPIO.output(elev_dir_pin, direction)
         GPIO.output(elev_step_pin, GPIO.HIGH)
         sleep(self.stepDelay)
@@ -179,6 +253,10 @@ class motorInterface():
 
     # defines how to drive the azimuth stepper
     def singleStep_Az(self, direction):
+        if direction == 0:
+            self.currStepperAzimuth = self.currStepperAzimuth - self.azDegPerStep
+        else:
+            self.currStepperAzimuth = self.currStepperAzimuth + self.azDegPerStep
         GPIO.output(az_dir_pin, direction)
         GPIO.output(az_step_pin, GPIO.HIGH)
         sleep(self.stepDelay)
@@ -212,6 +290,8 @@ class motorInterface():
         if homeBool:
             self.azHomed = False
             self.elevHomed = False
+            self.azHomedRotate = False
+            self.elevHomedRotate = False
 
     def shouldTrack(self):
         if self.keepTracking and self.calibratedMotors and self.satellite != None and self.observer != None:
