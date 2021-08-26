@@ -7,7 +7,7 @@ import re
 toDeg = 180 / pi
 toRad = pi / 180
 
-x = open("tleData.txt")
+x = open("/home/pi/Code/EST_Internship_2021/project_code/tleData.txt")
 data = x.read().splitlines()
 satTLEs = []
 currIndex = 0
