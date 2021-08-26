@@ -77,7 +77,8 @@ class motorInterface():
         self.elevDegPerStep = 0.9     # 1:2 ratio
 
         # amount of time the step pulse is high and low
-        self.stepDelay = 0.0001
+        self.stepDelay_Az = 0.0001
+        self.stepDelay_Elev = 0.001
 
         self.keepTracking = False #inner loop of tracking thread
         self.keepHoming = False #inner loop of homing thread
@@ -247,9 +248,9 @@ class motorInterface():
 
         GPIO.output(elev_dir_pin, direction)
         GPIO.output(elev_step_pin, GPIO.HIGH)
-        sleep(self.stepDelay)
+        sleep(self.stepDelay_Elev)
         GPIO.output(elev_step_pin, GPIO.LOW)
-        sleep(self.stepDelay)
+        sleep(self.stepDelay_Elev)
 
     # defines how to drive the azimuth stepper
     def singleStep_Az(self, direction):
@@ -259,9 +260,9 @@ class motorInterface():
             self.currStepperAzimuth = self.currStepperAzimuth + self.azDegPerStep
         GPIO.output(az_dir_pin, direction)
         GPIO.output(az_step_pin, GPIO.HIGH)
-        sleep(self.stepDelay)
+        sleep(self.stepDelay_Az)
         GPIO.output(az_step_pin, GPIO.LOW)
-        sleep(self.stepDelay)
+        sleep(self.stepDelay_Az)
 
     # turns the enable pin on or off for both stepper motors
     # mainly used during compass calibration to reduce electromagnetic interference
