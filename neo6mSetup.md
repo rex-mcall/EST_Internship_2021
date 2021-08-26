@@ -32,3 +32,50 @@ dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=d
 ```
 sudo reboot
 ```
+
+Now use:
+
+```
+ls -l /dev
+```
+
+Look for a line that says either:
+
+```
+serial0 -> ttyAMA0
+```
+
+or
+
+```
+serial0 -> ttyS0
+```
+
+If it says ttyAMA0 do this:
+
+```
+sudo systemctl stop serial-getty@ttyAMA0.service
+sudo systemctl disable serial-getty@ttyAMA0.service
+```
+
+If it says ttyS0:
+
+```
+sudo systemctl stop serial-getty@ttyS0.service
+sudo systemctl disable serial-getty@ttyS0.service
+```
+
+Now connect the pins:
+
+```
+Neo 6M VCC -----> Raspberry pi 5v
+Neo 6M GND -----> Raspberry pi GND
+Neo 6M  RX -----> Raspberry pi TX (gpio 14) //Not required in our case
+Neo 6M  TX -----> Raspberry pi RX (gpio 15)
+```
+
+You should now be able to test the module with the test code in:
+
+```
+/experimental_code/rpiTests/neo6mTest
+```
