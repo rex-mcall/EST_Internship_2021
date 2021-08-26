@@ -61,6 +61,11 @@ class motorInterface():
         GPIO.setup(elev_limit_pin, GPIO.IN)
         GPIO.setup(az_limit_pin, GPIO.IN)
 
+
+        # geared down ratios for degrees per step
+        self.azDegPerStep = 0.36      # 1:5 ratio
+        self.elevDegPerStep = 0.9     # 1:2 ratio
+
         self.stepMode_Elev = 8
         self.stepMode_Az = 8
         self.setMicrostepMode_Elev(self.stepMode_Elev)
@@ -72,9 +77,7 @@ class motorInterface():
         self.currStepperAzimuth = 0
         self.currStepperElevation = 0
 
-        # geared down ratios for degrees per step
-        self.azDegPerStep = 0.36      # 1:5 ratio
-        self.elevDegPerStep = 0.9     # 1:2 ratio
+
 
         # amount of time the step pulse is high and low
         self.stepDelay_Az = 0.0001
@@ -208,7 +211,7 @@ class motorInterface():
         # H   H   L   Eighth Step          2W1-2 Phase
         # H   H   H   Sixteenth Step       4W1-2 Phase
 
-        self.azDegPerStep   = 0.36 / stepMode  # 1:5 ratio
+        self.azDegPerStep = 0.36 / stepMode  # 1:5 ratio
         self.stepMode_Az = stepMode
         if stepMode == 1:
             GPIO.output(az_ms3_pin, GPIO.LOW)
