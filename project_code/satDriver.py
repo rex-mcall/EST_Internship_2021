@@ -92,26 +92,30 @@ class motorInterface():
         self.elevHomed = False
         self.azHomedRotate = False # rotation to correct position
         self.elevHomedRotate = False
+        azHomedFlag = False
+        elevHomedFlag = False
         while not self.stopMotorsThread:
             if self.keepHoming:
                 self.setShouldTrack(False) # stop trying to track a satellite while homing motors
 
                 if not self.azHomed or not self.elevHomed or not self.azHomedRotate or not self.elevHomedRotate:
                     if not GPIO.input(az_limit_pin): # OPS is not interrupted and allows current flow
-                        self.singleStep_Az(1)
-                    else:
+                        self.singleStep_Az(0)
+                    elif not azHomedFlag:
+                        azHomedFlag = True
                         self.azHomed = True
                         self.currStepperAzimuth = 0
                     if self.azHomed and not self.azHomedRotate and self.currStepperAzimuth < 180:
                         self.setMicrostepMode_Az(16)
-                        self.singleStep_Az(0)
+                        self.singleStep_Az(1)
                     else: 
                         self.azHomedRotate = True
 
 
                     if not GPIO.input(elev_limit_pin): # OPS is not interrupted and allows current flow
                         self.singleStep_Elev(0)
-                    else:
+                    elif not elevHomedFlag:
+                        elevHomedFlag = True
                         self.elevHomed = True
                         self.currStepperElevation = 0
                     if self.elevHomed and not self.elevHomedRotate and self.currStepperElevation < 90:
@@ -120,6 +124,8 @@ class motorInterface():
                     else: 
                         self.elevHomedRotate = True
                 else:
+                    azHomedFlag = False
+                    elevHomedFlag = False
                     self.setShouldHome(False)
                     self.calibratedMotors = True
 
