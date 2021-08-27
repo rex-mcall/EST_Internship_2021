@@ -8,7 +8,7 @@ from threading import Thread
 
 from satSearch import *
 from satDriver import *
-
+import gpsInterface
 
 
 class mainWindow():
@@ -20,19 +20,12 @@ class mainWindow():
         self.toDeg = 180 / pi
         self.toRad = pi / 180
 
-        # annapolis, md lat/long
-        self.latitude = 38.9784
-        self.longitude = -76.4922
-
         # sets up reveiver locaiton
         self.observer = ephem.Observer()
         #convert to Angle type by multiplying ephem.degree
-        self.observer.lat = self.latitude * ephem.degree
-        self.observer.lon = self.longitude * ephem.degree
-        self.observer.elev = 13
-        self.observer.date = datetime.now(timezone.utc)
 
-        self.motors = motorInterface(observer = self.observer)
+
+        self.motors = motorInterface()
 
 
         # Initializing main window ---------------------------------------------
@@ -48,7 +41,7 @@ class mainWindow():
         self.btn_alternateMotorState = Button(self.buttons_frame, text='Enable Motors', command=self.alternateMotorState)
         self.btn_alternateMotorState.grid(row=0, column=0, padx=(10), pady=10)
 
-        self.btn_Calibrate = Button(self.buttons_frame, text='Calibrate Sensors')
+        self.btn_Calibrate = Button(self.buttons_frame, text='Set Time & Location', command=self.setLocalization)
         self.btn_Calibrate.grid(row=0, column=1, padx=(10), pady=10)
 
         self.btn_Home = Button(self.buttons_frame, text='Home Motors', command=self.homeMotorsCommand)
@@ -155,6 +148,14 @@ class mainWindow():
         else:
             self.btn_alternateMotorState['text'] = "Disable Motors"
         self.motors.setEnableState(not self.motors.enableState)
+
+    def setLocalization(self):
+        self.latitude, self.longitude = gpsInterface.runGPS_Interface()
+        self.observer.lat = self.latitude * ephem.degree
+        self.observer.lon = self.longitude * ephem.degree
+        self.observer.elev = 13
+        self.observer.date = datetime.now(timezone.utc)
+        self.motors.setObserver(self.observer)
 
     def updateAppInfoFrame(self):
         try:

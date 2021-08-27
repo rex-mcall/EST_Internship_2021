@@ -89,6 +89,7 @@ class motorInterface():
         self.stopHomingThread = False #exits the homing thread when True
         self.calibratedMotors = True #keeps track of whether the current recorded position of the motors is accurate
         self.enableState = False #keeps track of whether the motors are currently enabled
+        self.setEnableState(False)
 
     def driveMotors(self):
         self.azHomed = False # initial homing with the sensor
