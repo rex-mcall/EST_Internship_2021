@@ -8,10 +8,10 @@ ser=serial.Serial(port, baudrate=9600, timeout=0.5)
 while True:
     newdata=ser.readline()
     try:
-        print(newdata.decode())
+        #print(newdata.decode())
     except:
         pass
-    if newdata[0:6] == '$GPGGA':
+    if newdata.decode()[0:6] == '$GPGGA':
         print("in if")
         newmsg = pynmea2.parse(newdata)
         lat = newmsg.latitude
