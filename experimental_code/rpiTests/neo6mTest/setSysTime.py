@@ -10,5 +10,5 @@ day = ((str)(time.day)).zfill(2)
 hr  = ((str)(time.hour)).zfill(2)
 min = ((str)(time.minute)).zfill(2)
 sec = ((str)(time.second)).zfill(2)
-systemutc = time.year + time.month + time.day + ' ' + hr + ':' + min + ':' + sec
+systemutc = yr + mon + day + ' ' + hr + ':' + min + ':' + sec
 os.system('sudo date -u --set="%s"' % systemutc)
