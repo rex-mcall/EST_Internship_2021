@@ -75,6 +75,17 @@ class mainWindow():
         self.maxWait_Entry = Entry(self.search_frame)
         self.maxWait_Entry.grid(row=2, column=1, padx=(10), pady=10)
 
+        self.minTimeLeft_Text = Label(self.search_frame, text="Min Time Left in Pass (Mins)")
+        self.minTimeLeft_Text.grid(row=2, column=0, padx=(10), pady=10)
+        self.minTimeLeft_Entry = Entry(self.search_frame)
+        self.minTimeLeft_Entry.grid(row=2, column=1, padx=(10), pady=10)
+
+        self.beforeVertex_Var = IntVar()
+        self.beforeVertex_Text = Label(self.search_frame, text="Only Show Results Before Peak Elevation:")
+        self.beforeVertex_Text.grid(row=2, column=0, padx=(10), pady=10)
+        self.beforeVertex_Entry = Checkbutton(self.search_frame, variable=self.beforeVertex_Var)
+        self.beforeVertex_Entry.grid(row=2, column=1, padx=(10), pady=10)
+
 
         self.startSearch_btn = Button(self.search_frame, text='Search', command = self.runSatelliteSearch)
         self.startSearch_btn.grid(row=3, column=1, padx=(10), pady=10)

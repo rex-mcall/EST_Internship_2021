@@ -18,7 +18,7 @@ for line in data:
     currIndex = currIndex + 1
 
 class satelliteSearch():
-    def __init__(self, observer = None, satNameSearch = None, minElevSearch = None, maxWaitSearch = None):
+    def __init__(self, observer = None, satNameSearch = None, minElevSearch = None, maxWaitSearch = None, beforeVertex = None, minTimeLeft = None, minMag = None):
         self.observer = observer
         self.satName_Search = satNameSearch
         self.minElev_Search = minElevSearch
@@ -47,9 +47,18 @@ class satelliteSearch():
                     nextPass = self.observer.next_pass(satellite, singlepass=False)
                 except Exception:
                     continue
+                #0  Rise time
+                #1  Rise azimuth
+                #2  Maximum altitude time
+                #3  Maximum altitude
+                #4  Set time
+                #5  Set azimuth
                 riseTime = nextPass[0].datetime()
+                riseAz = nextPasss[1] * toDeg
+                maxAltTime = nextPass[2].datetime()
                 maxAlt = nextPass[3] * toDeg
                 setTime = nextPass[4].datetime()
+                setAz = nextpass[5] * toDeg
 
             if self.minElev_Search == None:
                 matchElev = True
