@@ -13,4 +13,4 @@ sec = ((str)(time.second)).zfill(2)
 systemutc = yr + mon + day + ' ' + hr + ':' + min + ':' + sec
 os.system('sudo date -u --set="%s"' % systemutc)
 
-print(dt.now(timezone.utc))
+print(dt.datetime.now(timezone.utc))
