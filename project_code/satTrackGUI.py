@@ -84,7 +84,7 @@ class mainWindow():
         self.beforeVertex_Entry.grid(row=4, column=1, padx=(10), pady=10)
 
 
-        self.startSearch_btn = Button(self.search_frame, text='Search', command = self.runSatelliteSearch)
+        self.startSearch_btn = Button(self.search_frame, text='Search', command = self.runSatelliteSearch, state="disabled")
         self.startSearch_btn.grid(row=5, column=1, padx=(10), pady=10)
 
         # gps initialization frame -----------------------------------------------
@@ -132,7 +132,7 @@ class mainWindow():
         rowCounter = 0
         for satResult in topResults:
             btn = Button(self.results_Frame, text=satResult.name, command= partial(self.resultClick, satResult))
-            btn.grid(row=rowCounter, column=0)
+            btn.grid(row=rowCounter, column=0, pady=(5))
             rowCounter = rowCounter + 1
 
     def resultClick(self, sat):
@@ -174,6 +174,7 @@ class mainWindow():
         print(self.longitude)
         self.motors.setObserver(self.observer)
         self.gpsInfo_Label['text'] = "Latitude = " + ((str)(self.latitude)) + "\nLongitude = " + ((str)(self.longitude))
+        self.startSearch_btn['state'] = "normal"
 
     def updateAppInfoFrame(self):
         try:

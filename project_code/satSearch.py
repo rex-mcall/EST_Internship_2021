@@ -23,7 +23,10 @@ class satelliteSearch():
         self.satName_Search = satNameSearch
         self.minElev_Search = minElevSearch
         self.maxWait_Search = maxWaitSearch
-    def getTopResults(self, numResults = 20):
+        self.beforeVertex = beforeVertex
+        self.minTimeLeft = minTimeLeft
+        self.minMag = minMag
+    def getTopResults(self, numResults = 10):
         topResults = []
         for tleLines in satTLEs:
             if len(topResults) >= numResults:
@@ -32,6 +35,9 @@ class satelliteSearch():
             matchName = False
             matchElev = False
             matchWait = False
+            matchBfVtx = False
+            matchMinTimeLft = False
+            matchMinMag = False
 
             if self.satName_Search == None:
                 matchName = True
@@ -40,7 +46,7 @@ class satelliteSearch():
             else:
                 continue
 
-            if self.minElev_Search != None or self.maxWait_Search != None:
+            if self.minElev_Search != None or self.maxWait_Search != None or self.beforeVertex != None or self.minTimeLeft != None:
                 satellite = ephem.readtle(tleLines[0], tleLines[1], tleLines[2])
                 satellite.compute(self.observer)
                 try:
@@ -76,7 +82,15 @@ class satelliteSearch():
             else:
                 continue
 
-            if matchName and matchElev and matchWait:
+            if self.beforeVertex == None:
+                matchBfVtx = True
+            elif self.beforeVertex == 1 and maxAltTime > datetime.utcnow():
+                matchBfVtx = True
+            else:
+                continue
+
+
+            if matchName and matchElev and matchWait and matchBfVtx and matchMinTimeLeft and matchMinMag:
                 satellite = ephem.readtle(tleLines[0], tleLines[1], tleLines[2])
                 satellite.compute(self.observer)
                 topResults.append(satellite)
