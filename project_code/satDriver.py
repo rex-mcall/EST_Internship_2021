@@ -106,7 +106,7 @@ class motorInterface():
                         self.currStepperAzimuth = 0
 
 
-                    if GPIO.input(elev_limit_pin) and not self.elevHomed: # OPS is not interrupted and allows current flow
+                    if not GPIO.input(elev_limit_pin) and not self.elevHomed: # OPS is not interrupted and allows current flow
                         self.singleStep_Elev(1)
                     else:
                         self.elevHomed = True
