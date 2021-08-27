@@ -47,11 +47,8 @@ class mainWindow():
         self.btn_Home = Button(self.buttons_frame, text='Home Motors', command=self.homeMotorsCommand)
         self.btn_Home.grid(row=0, column=2, padx=(10), pady=10)
 
-        self.btn_Laser = Button(self.buttons_frame, text='Laser On/Off')
-        self.btn_Laser.grid(row=0, column=3, padx=(10), pady=10)
-
         self.btn_closeApp = Button(self.buttons_frame, text='Exit Application', command=self.Close)
-        self.btn_closeApp.grid(row=0, column=4, padx = 10, pady = 10)
+        self.btn_closeApp.grid(row=0, column=3, padx = 10, pady = 10)
 
         # Search Frame ----------------------------------------------------
         self.search_frame = Frame(self.master_window)

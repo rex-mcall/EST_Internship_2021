@@ -77,12 +77,9 @@ class satelliteSearch():
                 continue
 
             if matchName and matchElev and matchWait:
-                try:
-                    topResults.append(satellite)
-                except Exception:
-                    satellite = ephem.readtle(tleLines[0], tleLines[1], tleLines[2])
-                    satellite.compute(self.observer)
-                    topResults.append(satellite)
+                satellite = ephem.readtle(tleLines[0], tleLines[1], tleLines[2])
+                satellite.compute(self.observer)
+                topResults.append(satellite)
             else:
                 continue
 
