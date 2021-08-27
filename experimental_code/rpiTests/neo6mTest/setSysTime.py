@@ -1,4 +1,5 @@
 import datetime as dt
+from datetime import datetime, timezone
 import os
 import sys
 
@@ -13,4 +14,4 @@ sec = ((str)(time.second)).zfill(2)
 systemutc = yr + mon + day + ' ' + hr + ':' + min + ':' + sec
 os.system('sudo date -u --set="%s"' % systemutc)
 
-print(dt.datetime.now(timezone.utc))
+print(datetime.now(timezone.utc))
