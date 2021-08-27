@@ -60,7 +60,7 @@ class satelliteSearch():
 
             if self.maxWait_Search == None:
                 matchWait = True
-            elif self.maxWait_Search == 0 and satellite.alt * toDeg >= 0: # if satellite is currently visible
+            elif self.maxWait_Search == 0 and (satellite.alt * toDeg) >= 0: # if satellite is currently visible
                 matchWait = True
             elif dt.timedelta(minutes=self.maxWait_Search) >= (riseTime - datetime.utcnow()) or satellite.alt * toDeg >= 0:
                 matchWait = True
