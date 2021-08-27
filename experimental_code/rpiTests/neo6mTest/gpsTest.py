@@ -8,6 +8,7 @@ ser=serial.Serial(port, baudrate=9600, timeout=0.5)
 while True:
     newdata=ser.readline()
     try:
+        pass
         #print(newdata.decode())
     except:
         pass
