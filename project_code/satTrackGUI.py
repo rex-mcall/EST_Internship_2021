@@ -106,7 +106,7 @@ class mainWindow():
     def runSatelliteSearch(self):
         satName = self.search_Entry.get() if self.search_Entry.get() != '' else None
         minElev = int(self.minElev_Entry.get()) if self.minElev_Entry.get() != '' else None
-        maxWait = dt.timedelta(minutes=int(self.maxWait_Entry.get())) if self.maxWait_Entry.get() != '' else None
+        maxWait = self.maxWait_Entry.get() if self.maxWait_Entry.get() != '' else None
 
         search = satelliteSearch(observer = self.observer, satNameSearch = satName, minElevSearch = minElev, maxWaitSearch = maxWait)
         topResults = search.getTopResults()
