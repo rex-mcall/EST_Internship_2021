@@ -5,10 +5,9 @@ import pynmea2
 
 port="/dev/ttyAMA0"
 ser=serial.Serial(port, baudrate=9600, timeout=0.5)
-dataout = pynmea2.NMEAStreamReader()
 while True:
     newdata=ser.readline()
-    print(newdata)
+#    print(newdata)
     if newdata[0:6] == '$GPGGA':
         print("in if")
         newmsg = pynmea2.parse(newdata)
