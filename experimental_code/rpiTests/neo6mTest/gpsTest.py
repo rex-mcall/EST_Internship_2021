@@ -7,7 +7,7 @@ while True:
     port="/dev/ttyAMA0"
     ser=serial.Serial(port, baudrate=9600, timeout=0.5)
     dataout = pynmea2.NMEAStreamReader()
-    newdata=ser.readline().decode("utf-8")
+    newdata=(str) (ser.readline())
     if "$GPRMC" in newdata:
         newmsg=pynmea2.parse(newdata)
         lat=newmsg.latitude
