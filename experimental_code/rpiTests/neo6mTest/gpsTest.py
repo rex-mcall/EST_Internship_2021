@@ -8,9 +8,9 @@ ser=serial.Serial(port, baudrate=9600, timeout=0.5)
 dataout = pynmea2.NMEAStreamReader()
 while True:
     newdata=ser.readline()
-    if newdata[0:6] == "$GPGLL":
-        newmsg=pynmea2.parse(newdata)
-        lat=newmsg.latitude
-        lng=newmsg.longitude
-        gps = "Latitude=" + str(lat) + "and Longitude=" + str(lng)
+    if newdata[0:6] == '$GPGGA':
+        newmsg = pynmea2.parse(newdata)
+        lat = newmsg.latitude
+        lng = newmsg.longitude
+        gps = "Latitude = " + str(lat) + "and Longitude = " + str(lng)
         print(gps)
