@@ -155,6 +155,8 @@ class mainWindow():
         self.observer.lon = self.longitude * ephem.degree
         self.observer.elev = 13
         self.observer.date = datetime.now(timezone.utc)
+        print(self.latitude)
+        print(self.longitude)
         self.motors.setObserver(self.observer)
 
     def updateAppInfoFrame(self):
