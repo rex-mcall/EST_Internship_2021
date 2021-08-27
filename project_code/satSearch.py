@@ -54,11 +54,11 @@ class satelliteSearch():
                 #4  Set time
                 #5  Set azimuth
                 riseTime = nextPass[0].datetime()
-                riseAz = nextPasss[1] * toDeg
+                riseAz = nextPass[1] * toDeg
                 maxAltTime = nextPass[2].datetime()
                 maxAlt = nextPass[3] * toDeg
                 setTime = nextPass[4].datetime()
-                setAz = nextpass[5] * toDeg
+                setAz = nextPass[5] * toDeg
 
             if self.minElev_Search == None:
                 matchElev = True
