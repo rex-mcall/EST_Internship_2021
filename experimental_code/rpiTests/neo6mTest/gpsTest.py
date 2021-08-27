@@ -6,13 +6,16 @@ import pynmea2
 port="/dev/ttyAMA0"
 ser=serial.Serial(port, baudrate=9600, timeout=0.5)
 while True:
-    newdata=ser.readline()
-    data = newdata.decode()
+    try:
+        newdata=ser.readline()
+        data = newdata.decode()
 
-    if data[0:6] == '$GPGGA':
-        print("in if")
-        newmsg = pynmea2.parse(data)
-        lat = newmsg.latitude
-        lng = newmsg.longitude
-        gps = "Latitude = " + str(lat) + "and Longitude = " + str(lng)
-        print(gps)
+        if data[0:6] == '$GPGGA':
+            print("in if")
+            newmsg = pynmea2.parse(data)
+            lat = newmsg.latitude
+            lng = newmsg.longitude
+            gps = "Latitude = " + str(lat) + "and Longitude = " + str(lng)
+            print(gps)
+    except:
+        pass
