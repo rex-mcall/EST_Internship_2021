@@ -172,7 +172,7 @@ class mainWindow():
             satElev =   round(self.motors.satellite.alt * toDeg, 2)
             satAz =     round(self.motors.satellite.az * toDeg, 2)
             motorElev = round(self.motors.currStepperElevation, 2)
-            motorAz =   round(self.motors.currStepperAzimuth, 2)
+            motorAz =   round(self.motors.currStepperAzimuth % 360, 2)
         except AttributeError:
             self.master_window.after(50, func=self.updateAppInfoFrame)
             return

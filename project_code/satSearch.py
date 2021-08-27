@@ -23,7 +23,7 @@ class satelliteSearch():
         self.satName_Search = satNameSearch
         self.minElev_Search = minElevSearch
         self.maxWait_Search = maxWaitSearch
-    def getTopResults(self, numResults = 5):
+    def getTopResults(self, numResults = 20):
         topResults = []
         for tleLines in satTLEs:
             if len(topResults) >= numResults:
