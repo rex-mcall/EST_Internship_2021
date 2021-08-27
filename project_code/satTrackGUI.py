@@ -79,7 +79,14 @@ class mainWindow():
         self.startSearch_btn = Button(self.search_frame, text='Search', command = self.runSatelliteSearch)
         self.startSearch_btn.grid(row=3, column=1, padx=(10), pady=10)
 
-        # motor positions frame
+        # gps initialization frame -----------------------------------------------
+        self.gpsInfo_Frame = Frame(self.master_window)
+        self.gpsInfo_Frame.pack(fill='y')
+
+        self.gpsInfo_Label = Label(self.gpsInfo_Frame, text="GPS not set")
+        self.gpsInfo_Label.grid(row=0, column=0, padx=(10), pady=10)
+
+        # motor positions frame --------------------------------------------------------
         self.motorInfoFrame = Frame(self.master_window)
         self.motorInfoFrame.pack(fill='y')
 
@@ -158,6 +165,7 @@ class mainWindow():
         print(self.latitude)
         print(self.longitude)
         self.motors.setObserver(self.observer)
+        self.gpsInfo_Label['text'] = "Latitude = " + ((str)(self.latitude)) + "\nLongitude = " + ((str)(self.longitude))
 
     def updateAppInfoFrame(self):
         try:
