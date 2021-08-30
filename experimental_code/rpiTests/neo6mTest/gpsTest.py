@@ -9,10 +9,11 @@ while True:
     try:
         newdata=ser.readline()
         data = newdata.decode()
-
-        if data[0:6] == '$GPGGA':
+        print(data)
+        if data[0:6] == '$GPRMC':
             print("in if")
             newmsg = pynmea2.parse(data)
+            dtObject = newmsg.datetime
             lat = newmsg.latitude
             lng = newmsg.longitude
             gps = "Latitude = " + str(lat) + "and Longitude = " + str(lng)

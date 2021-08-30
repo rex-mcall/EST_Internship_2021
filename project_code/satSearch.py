@@ -26,7 +26,7 @@ class satelliteSearch():
         self.beforeVertex = beforeVertex
         self.minTimeLeft = minTimeLeft
         self.minMag = minMag
-    def getTopResults(self, numResults = 10):
+    def getTopResults(self, numResults = 5):
         topResults = []
         for tleLines in satTLEs:
             if len(topResults) >= numResults:
@@ -36,8 +36,8 @@ class satelliteSearch():
             matchElev = False
             matchWait = False
             matchBfVtx = False
-            matchMinTimeLft = False
-            matchMinMag = False
+            matchMinTimeLeft = True
+            matchMinMag = True
 
             if self.satName_Search == None:
                 matchName = True
