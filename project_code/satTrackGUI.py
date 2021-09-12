@@ -105,9 +105,7 @@ class mainWindow():
         self.motorInfo_Label.grid(row=1, column=0, padx=(10), pady=10)
 
         self.master_window.after(50, func=self.updateAppInfoFrame)
-
-        self.master_window.mainloop()
-
+        
         # moon and planets options
         self.moonPlanetsFrame = Frame(self.master_window)
         self.moonPlanetsFrame.pack(fill='y')
@@ -120,6 +118,11 @@ class mainWindow():
 
         saturnButton = Button(self.moonPlanetsFrame, text="Track Saturn", command= partial(self.trackObject, ephem.Saturn()))
         saturnButton.grid(row=2, column=0, pady=(5))
+
+        # master window mainloop -----------------------------------------------------------
+        self.master_window.mainloop()
+
+
 
 
 
