@@ -278,6 +278,7 @@ class motorInterface():
 
     def selectSatellite(self, newSatellite):
         self.satellite = newSatellite
+        self.satellite.compute(self.observer)
 
     def setObserver(self, newObserver):
         self.observer = newObserver
