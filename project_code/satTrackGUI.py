@@ -119,7 +119,7 @@ class mainWindow():
         jupiterButton.grid(row=1, column=0, pady=(5))
 
         saturnButton = Button(self.moonPlanetsFrame, text="Track Saturn", command= partial(self.trackObject, ephem.Saturn()))
-        saturnButton.grid(row=0, column=0, pady=(5))
+        saturnButton.grid(row=2, column=0, pady=(5))
 
 
 
