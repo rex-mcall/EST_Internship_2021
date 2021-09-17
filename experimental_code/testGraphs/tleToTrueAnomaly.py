@@ -78,12 +78,14 @@ def calc_M(tle):
 # calculates the eccentric anomaly (rad) using a Newton-Rhapson setup
 def calc_E(tle):
     M = calc_M(tle)
-    nextE = M
-    E = nextE
-    while (abs((nextE - E) / nextE) > 0.00001):
+    ecc = calc_eccentricity(tle)
+    E = M
+    nextE = E - ((E - (ecc * sin(E - M))) / (1 - ecc * cos(E)))
+    while (abs((nextE - E) / nextE) > 1e-14):
         E = nextE
-        nextE = (((M) - (ecc * (E * math.cos(E) - math.sin(E)))) /
-                 (1 - ecc * math.cos(E)))
+        # both versions of the equation yield the same answer
+        # nextE = (((M) - (ecc * (E * math.cos(E) - math.sin(E)))) / (1 - ecc * math.cos(E)))
+        nextE = E - ((E - (ecc * sin(E)) - M) / (1 - (ecc * cos(E))))
     return E
 
 
@@ -97,6 +99,21 @@ def calc_truea(tle):
 
     return truea
 
+def calc_truea_deltaT(tle, deltaTSeconds) :
+    M = calc_M(tle)
+    ecc = calc_eccentricity(tle)
+    n = calc_n(tle)
+    M = M + (n * deltaTSeconds)
+    # same as calc_E except is propogates the mean anomaly forward in time
+    E = M
+    nextE = E - ((E - (ecc * sin(E - M))) / (1 - ecc * cos(E)))
+    while (abs((nextE - E) / nextE) > 1e-14):
+        E = nextE
+        # both versions of the equation yield the same answer
+        # nextE = (((M) - (ecc * (E * math.cos(E) - math.sin(E)))) / (1 - ecc * math.cos(E)))
+        nextE = E - ((E - (ecc * sin(E)) - M) / (1 - (ecc * cos(E))))
+    v = 2 * atan2(sqrt(1 + ecc) * sin(E / 2), sqrt(1 - ecc) * cos(E / 2))
+    return v
 
 # creates an array of the value of true anomaly for a period of time over the orbit
 def calc_truea_time(tle, increment, numSeconds):
@@ -112,21 +129,10 @@ def calc_truea_time(tle, increment, numSeconds):
             yield start
             start += step
     for i in my_range(0, numSeconds, 60):
-        # same as calc_E except is propogates the mean anomaly forward in time
-        nextE = M + (n * i)
 
-        while (abs((nextE - E) / nextE) > 0.00001):
-            E = nextE
-            #nextE = (M + (n * i)) + (ecc * math.sin(E))
-            nextE = (((M+(n*i)) - (ecc * (E * math.cos(E) - math.sin(E)))
-                      ) / (1 - ecc * math.cos(E)))
 
         epochX.append(i / 60.0)
-
-        # trueaY.append(2 * math.atan( (((1.0+ecc) / (1.0-ecc))**(1.0/2.0)) * math.tan(E/2.0)))
-
-        trueaY.append(2 * atan2(sqrt(1 + ecc) * sin(E / 2),
-                      sqrt(1 - ecc) * cos(E / 2)))
+        trueaY.append(calc_truea_deltaT(tle, i))
     return epochX, trueaY
 
 

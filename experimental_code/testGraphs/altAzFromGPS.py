@@ -1,8 +1,8 @@
 from math import *
 import numpy as np
 
-eqRadius = 6378 #a
-polarRadius = 6356 #b
+eqRadius = 6378000 #a
+polarRadius = 6356000 #b
 
 
 # calculates the Earth Centered, Earth Fixed [ECEF] vector for a ground station latitude, longitude, and height

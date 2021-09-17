@@ -6,8 +6,11 @@
     "\\experimental_code\\guiTesting",
     "\\experimental_code\\largeTLEData",
     "\\experimental_code\\rpiTests",
-    "\\experimental_code\\rpiTests\\integratedTests"
+    "\\experimental_code\\rpiTests\\integratedTests",
+    "\\experimental_code\\rpiTests\\limitTest",
+    "\\experimental_code\\rpiTests\\neo6mTest",
+    "\\project_code"
   ],
-  "SelectedNode": "\\experimental_code\\guiTest2\\satelliteCalculations.py",
+  "SelectedNode": "\\project_code\\satSearch.py",
   "PreviewInSolutionExplorer": false
 }

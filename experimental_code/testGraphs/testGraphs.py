@@ -19,6 +19,8 @@ import numpy as np
 def plot_tle_over_time(tle):
     epochX, trueaY = ttte.calc_truea_time(tle, 120, 5760 * 6)
     plt.plot(epochX, trueaY, label="true anomaly")
+    plt.xlabel("Minutes since TLE epoch")
+    plt.ylabel("True Anomaly (radians)")
     plt.legend()
     plt.show()
 
@@ -116,10 +118,10 @@ def main() :
     # plotCartesianCoords(tled.tle1, ktco.cartesianCoordsTime(tled.tle1, truea1), tled.tle2, ktco.cartesianCoordsTime(tled.tle2, truea2))
 
     # # # cartOrbitalToInertial
-    # plotOrbitalToInertial(tled.tle2)
+    plotOrbitalToInertial(tled.tle2)
 
     # inertialToRotationalFrame
     # plotInertToRotation(tled.tle2)
 
-    testAltAz(tled.tle2)
+    # testAltAz(tled.tle2)
 main()
