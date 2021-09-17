@@ -103,14 +103,14 @@ class motorInterface():
                         self.singleStep_Az(0)
                     else:
                         self.azHomed = True
-                        self.currStepperAzimuth = 6
+                        self.currStepperAzimuth = 7
 
 
                     if not GPIO.input(elev_limit_pin) and not self.elevHomed: # OPS is not interrupted and allows current flow
                         self.singleStep_Elev(1)
                     else:
                         self.elevHomed = True
-                        self.currStepperElevation = 7
+                        self.currStepperElevation = 6
                 else:
 #                    if self.currStepperAzimuth < 180 or self.currStepperElevation < 90:
 #                        if self.currStepperAzimuth < 180:
@@ -278,6 +278,7 @@ class motorInterface():
 
     def selectSatellite(self, newSatellite):
         self.satellite = newSatellite
+        self.satellite.compute(self.observer)
 
     def setObserver(self, newObserver):
         self.observer = newObserver

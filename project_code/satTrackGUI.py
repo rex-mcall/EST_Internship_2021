@@ -105,8 +105,23 @@ class mainWindow():
         self.motorInfo_Label.grid(row=1, column=0, padx=(10), pady=10)
 
         self.master_window.after(50, func=self.updateAppInfoFrame)
+        
+        # moon and planets options
+        self.moonPlanetsFrame = Frame(self.master_window)
+        self.moonPlanetsFrame.pack(fill='y')
 
+        moonButton = Button(self.moonPlanetsFrame, text="Track Moon", command= partial(self.trackObject, ephem.Moon()))
+        moonButton.grid(row=0, column=0, pady=(5))
+
+        jupiterButton = Button(self.moonPlanetsFrame, text="Track Jupiter", command= partial(self.trackObject, ephem.Jupiter()))
+        jupiterButton.grid(row=1, column=0, pady=(5))
+
+        saturnButton = Button(self.moonPlanetsFrame, text="Track Saturn", command= partial(self.trackObject, ephem.Saturn()))
+        saturnButton.grid(row=2, column=0, pady=(5))
+
+        # master window mainloop -----------------------------------------------------------
         self.master_window.mainloop()
+
 
 
 
@@ -131,11 +146,11 @@ class mainWindow():
             widget.destroy()
         rowCounter = 0
         for satResult in topResults:
-            btn = Button(self.results_Frame, text=satResult.name, command= partial(self.resultClick, satResult))
+            btn = Button(self.results_Frame, text=satResult.name, command= partial(self.trackObject, satResult))
             btn.grid(row=rowCounter, column=0, pady=(5))
             rowCounter = rowCounter + 1
 
-    def resultClick(self, sat):
+    def trackObject(self, sat):
         self.motors.selectSatellite(sat)
         self.motors.setShouldTrack(True)
         try:
