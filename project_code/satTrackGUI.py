@@ -54,38 +54,45 @@ class mainWindow():
         self.search_frame = Frame(self.master_window)
         self.search_frame.pack(fill='y')
 
-
         self.search_Text = Label(self.search_frame, text="Satellite Name:")
         self.search_Text.grid(row=0, column=0, padx=(10), pady=10)
         self.search_Entry = Entry(self.search_frame)
         self.search_Entry.grid(row=0, column=1, padx=(10), pady=10)
-
 
         self.minElev_Text = Label(self.search_frame, text="Minimum Vertex Elevation (Deg):")
         self.minElev_Text.grid(row=1, column=0, padx=(10), pady=10)
         self.minElev_Entry = Entry(self.search_frame)
         self.minElev_Entry.grid(row=1, column=1, padx=(10), pady=10)
 
+        self.minCurrElev_Text = Label(self.search_frame, text="Minimum Current Elevation (Deg):")
+        self.minCurrElev_Text.grid(row=2, column=0, padx=(10), pady=10)
+        self.minCurrElev_Entry = Entry(self.search_frame)
+        self.minCurrElev_Entry.grid(row=2, column=1, padx=(10), pady=10)
 
         self.maxWait_Text = Label(self.search_frame, text="Max Wait Till Rise (Mins):")
-        self.maxWait_Text.grid(row=2, column=0, padx=(10), pady=10)
+        self.maxWait_Text.grid(row=3, column=0, padx=(10), pady=10)
         self.maxWait_Entry = Entry(self.search_frame)
-        self.maxWait_Entry.grid(row=2, column=1, padx=(10), pady=10)
+        self.maxWait_Entry.grid(row=3, column=1, padx=(10), pady=10)
 
         self.minTimeLeft_Text = Label(self.search_frame, text="Min Time Left in Pass (Mins)")
-        self.minTimeLeft_Text.grid(row=3, column=0, padx=(10), pady=10)
+        self.minTimeLeft_Text.grid(row=4, column=0, padx=(10), pady=10)
         self.minTimeLeft_Entry = Entry(self.search_frame)
-        self.minTimeLeft_Entry.grid(row=3, column=1, padx=(10), pady=10)
+        self.minTimeLeft_Entry.grid(row=4, column=1, padx=(10), pady=10)
 
         self.beforeVertex_Var = IntVar()
         self.beforeVertex_Text = Label(self.search_frame, text="Only Show Results Before Peak Elevation:")
-        self.beforeVertex_Text.grid(row=4, column=0, padx=(10), pady=10)
+        self.beforeVertex_Text.grid(row=5, column=0, padx=(10), pady=10)
         self.beforeVertex_Entry = Checkbutton(self.search_frame, variable=self.beforeVertex_Var)
-        self.beforeVertex_Entry.grid(row=4, column=1, padx=(10), pady=10)
+        self.beforeVertex_Entry.grid(row=5, column=1, padx=(10), pady=10)
+
+        self.numSatsToFind_Text = Label(self.search_frame, text="Number of Satellites to Find (Default 5):")
+        self.numSatsToFind_Text.grid(row=6, column=0, padx=(10), pady=10)
+        self.numSatsToFind_Entry = Entry(self.search_frame)
+        self.numSatsToFind_Entry.grid(row=6, column=1, padx=(10), pady=10)
 
 
         self.startSearch_btn = Button(self.search_frame, text='Search', command = self.runSatelliteSearch, state="disabled")
-        self.startSearch_btn.grid(row=5, column=1, padx=(10), pady=10)
+        self.startSearch_btn.grid(row=7, column=1, padx=(10), pady=10)
 
         # gps initialization frame -----------------------------------------------
         self.gpsInfo_Frame = Frame(self.master_window)
@@ -119,20 +126,19 @@ class mainWindow():
         saturnButton = Button(self.moonPlanetsFrame, text="Track Saturn", command= partial(self.trackObject, ephem.Saturn()))
         saturnButton.grid(row=2, column=0, pady=(5))
 
-        # master window mainloop -----------------------------------------------------------
+        # ================================================= master window mainloop =============================================================
         self.master_window.mainloop()
-
-
-
-
+        # ================================================= master window mainloop =============================================================
 
     def runSatelliteSearch(self):
         satName = self.search_Entry.get() if self.search_Entry.get() != '' else None
         minElev = int(self.minElev_Entry.get()) if self.minElev_Entry.get() != '' else None
+        minCurrElev = int(self.minCurrElev_Entry.get()) if self.minCurrElev_Entry.get() != '' else None
         maxWait = int(self.maxWait_Entry.get()) if self.maxWait_Entry.get() != '' else None
+        numSatResults = int(self.numSatsToFind_Entry.get()) if self.numSatsToFind_Entry.get() != '' else 5
         beforeVertexClicker = self.beforeVertex_Var.get()
-        search = satelliteSearch(observer = self.observer, satNameSearch = satName, minElevSearch = minElev, maxWaitSearch = maxWait, beforeVertex = beforeVertexClicker)
-        topResults = search.getTopResults()
+        search = satelliteSearch(observer = self.observer, satNameSearch = satName, minElevSearch = minElev, minCurrElevSearch = minCurrElev, maxWaitSearch = maxWait, beforeVertex = beforeVertexClicker)
+        topResults = search.getTopResults(numResults = numSatResults)
         self.searchResultButtonPopulation(topResults)
 
     def searchResultButtonPopulation(self, topResults):
